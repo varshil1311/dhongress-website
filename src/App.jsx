@@ -3,7 +3,8 @@ import {
   AlertTriangle, Flame, Users, Shield, Briefcase, Globe, Factory, Database,
   HeartHandshake, Crown, TrendingDown, Search, Filter, ExternalLink, Share2,
   Heart, ChevronRight, Sparkles, Info, CheckCircle2, Copy, Eye, Flag, Loader2,
-  Newspaper, MessageSquare, Clock, CheckSquare, XCircle, AlertCircle, History, Image as ImageIcon
+  Newspaper, MessageSquare, Clock, CheckSquare, XCircle, AlertCircle, History,
+  Menu, X, ArrowRight, BookOpen, Quote
 } from "lucide-react";
 
 export default function App() {
@@ -17,26 +18,31 @@ export default function App() {
   const [totalVisitors, setTotalVisitors] = useState(null);
   const [loadingCounter, setLoadingCounter] = useState(true);
 
-  // Donation State
+  // Support / Donation State
   const [pledgeAmount, setPledgeAmount] = useState(500);
   const [customPledge, setCustomPledge] = useState("");
   const [donorName, setDonorName] = useState("");
   const [donorMsg, setDonorMsg] = useState("");
+  const [pledgesList, setPledgesList] = useState([
+    { name: "Rahul S.", amount: 1000, msg: "Proud to support Bharat Ke Veer instead of political funds! Jai Hind 🇮🇳", time: "2 mins ago" },
+    { name: "Ananya M.", amount: 500, msg: "All contributions directly to our martyrs & soldiers.", time: "14 mins ago" },
+    { name: "Vikas P.", amount: 2100, msg: "True patriotism is supporting the Indian Army. Donated on official portal!", time: "1 hour ago" }
+  ]);
   const [showPledgeSuccess, setShowPledgeSuccess] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [copiedText, setCopiedText] = useState("");
 
   const DOMAIN_NAME = "indiannationaldhongress.com";
   const BHARAT_KE_VEER_URL = "https://bharatkeveer.gov.in/donorLogin";
-  const CURRENT_TIME = new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const CURRENT_DATE = new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  // --- MOCK EDITORIAL DATA STRUCTURES (Mirrors your future DB) ---
+  // --- EDITORIAL DATABASE ---
   
   const socialWatch = [
     {
       id: 1, author: "INC Official", handle: "@INCIndia", time: "2 hours ago",
       content: "We will guarantee 30 Lakh government jobs to the youth immediately upon forming the government.",
-      context: "During UPA (2004-2014), formal job creation averaged 1.5% annually. 30 Lakh immediate jobs lacks budgetary framework mapping in the current manifesto.",
+      context: "During UPA (2004-2014), formal job creation averaged 1.5% annually. 30 Lakh immediate jobs lacks budgetary framework mapping.",
       status: "MISLEADING", type: "CLAIM"
     },
     {
@@ -55,235 +61,26 @@ export default function App() {
 
   const factChecks = [
     {
-      id: 1, date: "Oct 12",
-      claim: "INC claimed India's manufacturing sector only started growing after 2004.",
-      verification: "World Bank data shows manufacturing as % of GDP was largely stagnant at ~15% from 1990 through 2014.",
-      verdict: "FALSE", source: "World Bank Economic Data 2004-2014"
-    },
-    {
-      id: 2, date: "Oct 10",
+      id: 1, date: "Recent Fact Check",
       claim: "Statement that 'Poverty was eradicated' during UPA-1.",
       verification: "Tendulkar Committee report (commissioned by UPA) showed 21.9% of the population still below poverty line in 2011-12.",
-      verdict: "MISLEADING", source: "Planning Commission / Tendulkar Report 2013"
+      verdict: "FALSE", source: "Planning Commission / Tendulkar Report 2013"
+    },
+    {
+      id: 2, date: "Recent Fact Check",
+      claim: "INC claimed India's manufacturing sector only started growing after 2004.",
+      verification: "World Bank data shows manufacturing as % of GDP was largely stagnant at ~15% from 1990 through 2014.",
+      verdict: "MISLEADING", source: "World Bank Economic Data 2004-2014"
     }
   ];
 
   const satireWall = [
-    { id: 1, title: "High Command Unveils Magic Wand to Print 30 Lakh Offer Letters", img: "🪄", tag: "SATIRE" },
-    { id: 2, title: "Minister Calculates 'Zero Loss' Using Invisible Calculator", img: "🧮", tag: "SATIRE" },
-    { id: 3, title: "Party Announces 8th 'Relaunch' of Youth Icon This Decade", img: "🚀", tag: "SATIRE" }
+    { id: 1, title: "High Command Unveils Magic Wand to Print 30 Lakh Offer Letters", icon: "🪄", tag: "SATIRE" },
+    { id: 2, title: "Minister Calculates 'Zero Loss' Using Invisible Calculator", icon: "🧮", tag: "SATIRE" },
+    { id: 3, title: "Party Announces 8th 'Relaunch' of Youth Icon This Decade", icon: "🚀", tag: "SATIRE" }
   ];
 
-  // (Existing Data Arrays: pillars, scamDatabase, pledgesList kept below for other tabs)
-  
-  // Real Persistent Hit Counter
-  useEffect(() => {
-    async function trackVisit() {
-      try {
-        setLoadingCounter(true);
-        const res = await fetch(`https://api.counterapi.dev/v1/indiannationaldhongress/visits/up`);
-        if (res.ok) {
-          const data = await res.json();
-          setTotalVisitors(data.count);
-        } else {
-          setTotalVisitors(1842);
-        }
-      } catch (err) {
-        setTotalVisitors(1842);
-      } finally {
-        setLoadingCounter(false);
-      }
-    }
-    trackVisit();
-  }, []);
-
-  const copyToClipboard = (text) => {
-    const el = document.createElement("textarea");
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
-    setCopiedText("Copied!");
-    setTimeout(() => setCopiedText(""), 2000);
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'FALSE': return 'text-red-500 bg-red-500/10 border-red-500/30';
-      case 'MISLEADING': return 'text-orange-500 bg-orange-500/10 border-orange-500/30';
-      case 'DISPUTED': return 'text-amber-500 bg-amber-500/10 border-amber-500/30';
-      case 'VERIFIED FACT': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30';
-      case 'SATIRE': return 'text-fuchsia-500 bg-fuchsia-500/10 border-fuchsia-500/30';
-      default: return 'text-slate-400 bg-slate-800 border-slate-700';
-    }
-  };
-
-  // --- RENDER HELPERS FOR NEWSROOM HOMEPAGE ---
-
-  const renderNewsroomOverview = () => (
-    <div className="space-y-12">
-      {/* Editorial Hero */}
-      <div className="relative border-b-4 border-amber-600 pb-12 pt-6">
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-slate-700 bg-slate-900 text-slate-400 text-xs font-mono uppercase tracking-widest">
-            <Clock className="w-3.5 h-3.5 text-amber-500" /> Editorial Desk Updated: {CURRENT_TIME}
-          </div>
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-white font-serif uppercase">
-            Today's Political <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-red-600">Circus</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-serif italic border-y border-slate-800 py-4 mt-6">
-            "A fact-checked, satirical, and empirical archive monitoring 60 years of dynastic monopoly, unfulfilled promises, and historical contradictions."
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* LEFT COLUMN: Main Editorial Content */}
-        <div className="lg:col-span-8 space-y-10">
-          
-          {/* X / Twitter Watch */}
-          <section className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-            <div className="bg-slate-950 border-b border-slate-800 p-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2 font-serif">
-                <MessageSquare className="w-5 h-5 text-sky-400" /> X / Twitter Watch
-              </h2>
-              <span className="text-xs text-slate-500 font-mono">Live Monitoring</span>
-            </div>
-            <div className="divide-y divide-slate-800">
-              {socialWatch.map((post) => (
-                <div key={post.id} className="p-5 space-y-4 hover:bg-slate-850 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-400">
-                        {post.author.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold text-white">{post.author}</div>
-                        <div className="text-xs text-slate-500">{post.handle} • {post.time}</div>
-                      </div>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${getStatusColor(post.status)}`}>
-                      {post.status}
-                    </span>
-                  </div>
-                  <p className="text-slate-200 text-sm md:text-base leading-relaxed">"{post.content}"</p>
-                  
-                  {/* Editorial Reality Check Box */}
-                  <div className="bg-slate-950 rounded-lg p-4 border-l-2 border-amber-500 flex gap-3">
-                    <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                    <div>
-                      <div className="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Editorial Context</div>
-                      <p className="text-sm text-slate-400 leading-relaxed">{post.context}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Claims vs Reality */}
-          <section className="space-y-6">
-            <h2 className="text-2xl font-black text-white font-serif uppercase border-b-2 border-slate-800 pb-2">
-              The Flip-Flop Files: Claims vs Reality
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 space-y-4">
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2">Claim</div>
-                <p className="text-slate-200 italic font-serif">"We champion women's rights and immediate reservations."</p>
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2 mt-4">Reality</div>
-                <p className="text-slate-400 text-sm">The 33% Women's Reservation Bill lapsed repeatedly during UPA rule (2004-2014) due to lack of political will and coalition pressure.</p>
-              </div>
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 space-y-4">
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2">Claim</div>
-                <p className="text-slate-200 italic font-serif">"Zero loss occurred in the allocation of 2G spectrum."</p>
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2 mt-4">Reality</div>
-                <p className="text-slate-400 text-sm">CAG Report 2010 estimated presumptive loss of ₹1.76 Lakh Cr. Supreme Court subsequently cancelled 122 illegal licenses in 2012.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Satire Wall */}
-          <section className="space-y-6">
-            <h2 className="text-2xl font-black text-white font-serif uppercase border-b-2 border-slate-800 pb-2 flex items-center gap-2">
-              <Flame className="w-6 h-6 text-fuchsia-500" /> The Satire Wall
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {satireWall.map(satire => (
-                <div key={satire.id} className="group relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden aspect-square flex flex-col items-center justify-center p-4 text-center hover:border-fuchsia-500/50 transition-colors cursor-pointer">
-                  <div className="absolute top-2 right-2 bg-fuchsia-600 text-white text-[9px] font-black uppercase px-2 py-1 rounded tracking-widest z-10 shadow-lg">
-                    {satire.tag}
-                  </div>
-                  <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">{satire.img}</div>
-                  <h3 className="text-sm font-bold text-slate-200 group-hover:text-fuchsia-400 font-serif">{satire.title}</h3>
-                </div>
-              ))}
-            </div>
-          </section>
-
-        </div>
-
-        {/* RIGHT COLUMN: Fact Checks & Sidebars */}
-        <div className="lg:col-span-4 space-y-8">
-          
-          {/* Fact Check Corner */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
-            <div className="bg-red-950/50 border-b border-red-900/50 p-4 flex items-center gap-2">
-              <CheckSquare className="w-5 h-5 text-red-500" />
-              <h2 className="text-lg font-bold text-white font-serif">Fact-Check Corner</h2>
-            </div>
-            <div className="divide-y divide-slate-800">
-              {factChecks.map(check => (
-                <div key={check.id} className="p-4 space-y-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${getStatusColor(check.verdict)}`}>
-                      {check.verdict}
-                    </span>
-                    <span className="text-xs text-slate-500">{check.date}</span>
-                  </div>
-                  <p className="text-sm font-bold text-slate-200 font-serif">"{check.claim}"</p>
-                  <p className="text-xs text-slate-400 leading-relaxed bg-slate-950 p-2 rounded border border-slate-800/50">
-                    <strong className="text-slate-300">Evidence:</strong> {check.verification}
-                  </p>
-                  <div className="text-[10px] text-slate-500 flex items-center gap-1 pt-1">
-                    <Database className="w-3 h-3" /> Source: {check.source}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Today in History */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2 font-serif border-b border-slate-800 pb-2">
-              <History className="w-5 h-5 text-amber-500" /> This Day in History
-            </h2>
-            <div className="space-y-2">
-              <div className="text-xs font-mono text-amber-500">October 1975</div>
-              <p className="text-sm text-slate-300">
-                During the Emergency, the government amended the Constitution to heavily restrict judicial review, centralizing unprecedented power in the PMO.
-              </p>
-              <div className="text-xs text-slate-500 italic mt-2">
-                "Democracy suspended while claiming to save it."
-              </div>
-            </div>
-          </div>
-
-          {/* Support Banner Sidebar */}
-          <button onClick={() => setActiveTab("donate")} className="w-full bg-gradient-to-br from-emerald-900 to-slate-900 border border-emerald-500/30 rounded-xl p-5 text-left hover:scale-[1.02] transition-transform group">
-            <div className="flex items-center justify-between mb-2">
-              <Flag className="w-6 h-6 text-emerald-500 fill-emerald-500/20 group-hover:fill-emerald-500 transition-colors" />
-              <ExternalLink className="w-4 h-4 text-emerald-500" />
-            </div>
-            <h3 className="text-base font-bold text-white mb-1">Support the Bravehearts 🇮🇳</h3>
-            <p className="text-xs text-slate-400">Skip political donations. Contribute directly to the Indian Armed Forces via Bharat Ke Veer.</p>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Existing databases (Pillars, Scams, etc) are retained as previously generated
+  // 10 Core Pillars of Satire & Analysis
   const pillars = [
     {
       id: 1, title: "Youth: Past Action vs Today's Preach", tag: "Youth Contradiction", icon: Users, color: "from-amber-500 to-orange-600",
@@ -387,12 +184,45 @@ export default function App() {
     }
   ];
 
+  // Scam Vault Database
   const scamDatabase = [
-    { id: "2g", name: "2G Spectrum Allocation", year: "2008", loss: "₹1,76,000 Cr", lossNum: 176000, category: "Telecom", minister: "A. Raja", cag: "CAG Report No. 19 (2010)", description: "Arbitrary FCFS spectrum allocation.", status: "122 licenses cancelled by SC.", source: "SC Judgment 2012" },
-    { id: "coal", name: "Coalgate", year: "2012", loss: "₹1,86,000 Cr", lossNum: 186000, category: "Resources", minister: "Ministry of Coal", cag: "CAG Report No. 7 (2012)", description: "214 captive coal blocks allocated without bidding.", status: "SC cancelled 214 allocations.", source: "SC Judgment 2014" },
-    { id: "cwg", name: "CWG Loot", year: "2010", loss: "₹70,000 Cr", lossNum: 70000, category: "Sports", minister: "Suresh Kalmadi", cag: "Shunglu Committee", description: "Massive procurement corruption.", status: "Charge-sheets filed, arrests made.", source: "Shunglu Report" },
-    { id: "agusta", name: "AgustaWestland", year: "2013", loss: "₹3,600 Cr", lossNum: 3600, category: "Defense", minister: "A.K. Antony", cag: "CAG on VVIP Fleet", description: "Flight altitude specs lowered for kickbacks.", status: "Christian Michel extradited.", source: "Milan Court Judgment" }
+    { id: "2g", name: "2G Spectrum Allocation Scam", year: "2008", loss: "₹1,76,000 Cr", lossNum: 176000, category: "Telecom", minister: "A. Raja", cag: "CAG Report No. 19 of 2010", description: "Arbitrary FCFS spectrum allocation.", status: "122 licenses cancelled by SC.", source: "SC Judgment 2012" },
+    { id: "coal", name: "Coalgate", year: "2012", loss: "₹1,86,000 Cr", lossNum: 186000, category: "Resources", minister: "Ministry of Coal", cag: "CAG Report No. 7 of 2012", description: "214 captive coal blocks allocated without bidding.", status: "SC cancelled 214 allocations.", source: "SC Judgment 2014" },
+    { id: "cwg", name: "CWG Loot", year: "2010", loss: "₹70,000 Cr", lossNum: 70000, category: "Sports", minister: "Suresh Kalmadi", cag: "Shunglu Committee", description: "Massive procurement corruption.", status: "Charge-sheets filed.", source: "Shunglu Report" },
+    { id: "agusta", name: "AgustaWestland", year: "2013", loss: "₹3,600 Cr", lossNum: 3600, category: "Defense", minister: "A.K. Antony", cag: "CAG on VVIP Fleet", description: "Flight altitude specs lowered for kickbacks.", status: "Middleman extradited.", source: "Milan Court Judgment" }
   ];
+
+  // Real Persistent Hit Counter
+  useEffect(() => {
+    async function trackVisit() {
+      try {
+        setLoadingCounter(true);
+        const res = await fetch(`https://api.counterapi.dev/v1/indiannationaldhongress/visits/up`);
+        if (res.ok) {
+          const data = await res.json();
+          setTotalVisitors(data.count);
+        } else {
+          setTotalVisitors(1842);
+        }
+      } catch (err) {
+        setTotalVisitors(1842);
+      } finally {
+        setLoadingCounter(false);
+      }
+    }
+    trackVisit();
+  }, []);
+
+  const copyToClipboard = (text) => {
+    const el = document.createElement("textarea");
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+    setCopiedText("Copied!");
+    setTimeout(() => setCopiedText(""), 2000);
+  };
 
   const filteredScams = useMemo(() => {
     return scamDatabase.filter((s) => {
@@ -419,13 +249,192 @@ export default function App() {
     setTimeout(() => setShowPledgeSuccess(false), 6000);
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'FALSE': return 'text-red-500 bg-red-500/10 border-red-500/30';
+      case 'MISLEADING': return 'text-orange-500 bg-orange-500/10 border-orange-500/30';
+      case 'DISPUTED': return 'text-amber-500 bg-amber-500/10 border-amber-500/30';
+      case 'VERIFIED FACT': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30';
+      case 'SATIRE': return 'text-fuchsia-500 bg-fuchsia-500/10 border-fuchsia-500/30';
+      default: return 'text-slate-400 bg-slate-800 border-slate-700';
+    }
+  };
+
+  // --- RENDER HELPERS ---
+
+  const renderNewsroomOverview = () => (
+    <div className="space-y-12 animate-fade-in">
+      {/* Editorial Newspaper Hero */}
+      <div className="relative border-b-4 border-amber-600 pb-12 pt-6">
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-slate-700 bg-slate-900 text-slate-400 text-xs font-mono uppercase tracking-widest mb-4">
+            <Clock className="w-3.5 h-3.5 text-amber-500" /> Edition: {CURRENT_DATE}
+          </div>
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-white font-serif uppercase leading-none">
+            TODAY'S POLITICAL <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-red-600">CIRCUS</span>
+          </h1>
+          <p className="text-lg sm:text-xl text-slate-300 max-w-4xl mx-auto font-serif italic border-y border-slate-800 py-4 mt-6">
+            "India's definitive satirical archive and historical audit. Documenting promises made in opposition against realities delivered in power."
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* LEFT COLUMN: Main Editorial Content */}
+        <div className="lg:col-span-8 space-y-10">
+          
+          {/* X / Twitter Watch */}
+          <section className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+            <div className="bg-slate-950 border-b border-slate-800 p-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2 font-serif uppercase tracking-wide">
+                <MessageSquare className="w-5 h-5 text-sky-400" /> X / Twitter Watch
+              </h2>
+              <span className="text-xs text-slate-500 font-mono">Live Monitoring</span>
+            </div>
+            <div className="divide-y divide-slate-800">
+              {socialWatch.map((post) => (
+                <div key={post.id} className="p-5 space-y-4 hover:bg-slate-850 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-400">
+                        {post.author.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-white">{post.author}</div>
+                        <div className="text-xs text-slate-500">{post.handle} • {post.time}</div>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${getStatusColor(post.status)}`}>
+                      {post.status}
+                    </span>
+                  </div>
+                  <p className="text-slate-200 text-sm md:text-base leading-relaxed">"{post.content}"</p>
+                  
+                  {/* Editorial Reality Check Box */}
+                  <div className="bg-slate-950 rounded-lg p-4 border-l-2 border-amber-500 flex gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Editorial Context</div>
+                      <p className="text-sm text-slate-400 leading-relaxed">{post.context}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Claims vs Reality (Flip-Flop Files) */}
+          <section className="space-y-6">
+            <h2 className="text-2xl font-black text-white font-serif uppercase border-b-2 border-slate-800 pb-2">
+              The Flip-Flop Files: Claims vs Reality
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-slate-900 rounded-xl border border-slate-800 p-6 space-y-4 shadow-lg">
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2">The Claim Today</div>
+                <p className="text-slate-200 italic font-serif text-lg">"We champion women's rights and immediate reservations."</p>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2 mt-4">The Historical Reality</div>
+                <p className="text-slate-400 text-sm leading-relaxed">The 33% Women's Reservation Bill lapsed repeatedly during consecutive terms in power due to lack of political will and alliance pressures.</p>
+              </div>
+              <div className="bg-slate-900 rounded-xl border border-slate-800 p-6 space-y-4 shadow-lg">
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2">The Claim Today</div>
+                <p className="text-slate-200 italic font-serif text-lg">"Zero loss occurred in the allocation of 2G spectrum."</p>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2 mt-4">The Historical Reality</div>
+                <p className="text-slate-400 text-sm leading-relaxed">CAG Report 2010 estimated presumptive loss of ₹1.76 Lakh Cr. Supreme Court subsequently cancelled 122 illegal licenses in 2012.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Satire Wall */}
+          <section className="space-y-6">
+            <h2 className="text-2xl font-black text-white font-serif uppercase border-b-2 border-slate-800 pb-2 flex items-center gap-2">
+              <Flame className="w-6 h-6 text-fuchsia-500" /> The Satire Wall
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {satireWall.map(satire => (
+                <div key={satire.id} className="group relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden aspect-square flex flex-col items-center justify-center p-4 text-center hover:border-fuchsia-500/50 transition-colors cursor-pointer shadow-lg">
+                  <div className="absolute top-2 right-2 bg-fuchsia-600 text-white text-[9px] font-black uppercase px-2 py-1 rounded tracking-widest z-10 shadow-lg">
+                    {satire.tag}
+                  </div>
+                  <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">{satire.icon}</div>
+                  <h3 className="text-sm font-bold text-slate-200 group-hover:text-fuchsia-400 font-serif">{satire.title}</h3>
+                </div>
+              ))}
+            </div>
+          </section>
+
+        </div>
+
+        {/* RIGHT COLUMN: Fact Checks & Sidebars */}
+        <div className="lg:col-span-4 space-y-8">
+          
+          {/* Fact Check Corner */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
+            <div className="bg-red-950/50 border-b border-red-900/50 p-4 flex items-center gap-2">
+              <CheckSquare className="w-5 h-5 text-red-500" />
+              <h2 className="text-lg font-bold text-white font-serif uppercase tracking-wide">Fact-Check Corner</h2>
+            </div>
+            <div className="divide-y divide-slate-800">
+              {factChecks.map(check => (
+                <div key={check.id} className="p-5 space-y-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${getStatusColor(check.verdict)}`}>
+                      {check.verdict}
+                    </span>
+                    <span className="text-xs text-slate-500">{check.date}</span>
+                  </div>
+                  <p className="text-sm font-bold text-slate-200 font-serif leading-relaxed">"{check.claim}"</p>
+                  <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      <strong className="text-slate-300">Evidence:</strong> {check.verification}
+                    </p>
+                  </div>
+                  <div className="text-[10px] text-slate-500 flex items-center gap-1 pt-1 font-mono">
+                    <Database className="w-3 h-3" /> Source: {check.source}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Today in History */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4 shadow-xl">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2 font-serif uppercase tracking-wide border-b border-slate-800 pb-2">
+              <History className="w-5 h-5 text-amber-500" /> This Day in History
+            </h2>
+            <div className="space-y-3">
+              <div className="text-xs font-mono font-bold text-amber-500 px-2 py-1 bg-amber-500/10 rounded inline-block">1975 Era</div>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                During the Emergency, the government amended the Constitution to heavily restrict judicial review, centralizing unprecedented power and suppressing opposition voices.
+              </p>
+              <div className="text-xs text-slate-500 italic mt-2 flex gap-2 items-start border-t border-slate-800 pt-3">
+                <Quote className="w-4 h-4 text-slate-600 flex-shrink-0" />
+                "Democracy suspended while claiming to save it."
+              </div>
+            </div>
+          </div>
+
+          {/* Support Banner Sidebar */}
+          <button onClick={() => setActiveTab("donate")} className="w-full bg-gradient-to-br from-emerald-900 to-slate-900 border border-emerald-500/30 rounded-xl p-6 text-left hover:scale-[1.02] transition-transform group shadow-xl">
+            <div className="flex items-center justify-between mb-3">
+              <Flag className="w-8 h-8 text-emerald-500 fill-emerald-500/20 group-hover:fill-emerald-500 transition-colors" />
+              <ExternalLink className="w-4 h-4 text-emerald-500" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2">Support the Bravehearts 🇮🇳</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">This site accepts ZERO donations. Contribute directly to the Indian Armed Forces via the official Bharat Ke Veer portal.</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950">
       
       {/* Ticker Banner */}
       <div className="bg-gradient-to-r from-red-700 via-amber-600 to-red-700 overflow-hidden whitespace-nowrap py-1.5 flex items-center shadow-md border-b border-red-900">
         <div className="animate-[marquee_20s_linear_infinite] flex items-center gap-8 text-xs font-bold text-white uppercase tracking-widest font-mono">
-          <span><AlertTriangle className="w-3 h-3 inline pb-0.5" /> EDITORIAL DISCLAIMER: ALL INDIA DHONGRESS PARTY IS A SATIRICAL & HISTORICAL ARCHIVE</span>
+          <span><AlertTriangle className="w-3 h-3 inline pb-0.5" /> EDITORIAL DISCLAIMER: THIS IS A SATIRICAL & HISTORICAL ARCHIVE</span>
           <span>•</span>
           <span>NOT AFFILIATED WITH ANY OFFICIAL POLITICAL ENTITY</span>
           <span>•</span>
@@ -433,17 +442,17 @@ export default function App() {
           <span>•</span>
           <span><Flag className="w-3 h-3 inline pb-0.5" /> 100% OF SITE SUPPORT REDIRECTS TO BHARAT KE VEER</span>
           <span>•</span>
-          <span>EDITORIAL DISCLAIMER: ALL INDIA DHONGRESS PARTY IS A SATIRICAL & HISTORICAL ARCHIVE</span>
+          <span>EDITORIAL DISCLAIMER: THIS IS A SATIRICAL & HISTORICAL ARCHIVE</span>
         </div>
       </div>
 
       {/* Main Header / Navigation */}
-      <header className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-md border-b-2 border-slate-800 shadow-xl">
+      <header className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Brand / Logo */}
             <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab("overview")}>
-              <div className="w-12 h-12 rounded bg-slate-900 border-2 border-slate-700 flex items-center justify-center font-black text-2xl text-white group-hover:border-amber-500 transition-colors font-serif shadow-inner">
+              <div className="w-12 h-12 rounded bg-slate-900 border border-slate-700 flex items-center justify-center font-black text-2xl text-white group-hover:border-amber-500 transition-colors font-serif shadow-inner">
                 ध
               </div>
               <div>
@@ -461,13 +470,13 @@ export default function App() {
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-              <button onClick={() => setActiveTab("overview")} className={`px-3 py-2 rounded text-sm font-bold transition-all font-serif ${activeTab === "overview" ? "text-amber-500" : "text-slate-400 hover:text-white"}`}>Home / Newsroom</button>
+              <button onClick={() => setActiveTab("overview")} className={`px-3 py-2 rounded text-sm font-bold transition-all font-serif ${activeTab === "overview" ? "text-amber-500" : "text-slate-400 hover:text-white"}`}>Newsroom</button>
               <button onClick={() => setActiveTab("pillars")} className={`px-3 py-2 rounded text-sm font-bold transition-all font-serif ${activeTab === "pillars" ? "text-amber-500" : "text-slate-400 hover:text-white"}`}>10 Charges</button>
               <button onClick={() => setActiveTab("scams")} className={`px-3 py-2 rounded text-sm font-bold transition-all font-serif ${activeTab === "scams" ? "text-amber-500" : "text-slate-400 hover:text-white"}`}>The Vault</button>
               <button onClick={() => setActiveTab("meltdown")} className={`px-3 py-2 rounded text-sm font-bold transition-all font-serif ${activeTab === "meltdown" ? "text-amber-500" : "text-slate-400 hover:text-white"}`}>Meltdown</button>
-              <div className="h-6 w-px bg-slate-700 mx-2"></div>
-              <button onClick={() => setActiveTab("donate")} className="px-4 py-2 rounded bg-slate-100 text-slate-900 text-sm font-bold hover:bg-white transition-colors flex items-center gap-1.5 border border-slate-300">
-                <Flag className="w-3.5 h-3.5" /> Support Army
+              <div className="h-6 w-px bg-slate-800 mx-2"></div>
+              <button onClick={() => setActiveTab("donate")} className="px-4 py-2 rounded bg-slate-100 text-slate-900 text-sm font-bold hover:bg-white transition-colors flex items-center gap-1.5 border border-slate-300 shadow">
+                <Flag className="w-3.5 h-3.5 fill-slate-900" /> Support Army
               </button>
             </nav>
 
@@ -483,12 +492,12 @@ export default function App() {
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="md:hidden border-b border-slate-800 bg-slate-950 px-4 pt-2 pb-6 space-y-2">
-            <button onClick={() => { setActiveTab("overview"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded font-serif font-bold text-slate-200">Home / Newsroom</button>
-            <button onClick={() => { setActiveTab("pillars"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded font-serif font-bold text-slate-200">10 Charges</button>
-            <button onClick={() => { setActiveTab("scams"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded font-serif font-bold text-slate-200">Mega Scam Vault</button>
-            <button onClick={() => { setActiveTab("meltdown"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded font-serif font-bold text-slate-200">Electoral Meltdown</button>
+            <button onClick={() => { setActiveTab("overview"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-3 rounded font-serif font-bold text-slate-200 border-b border-slate-800">Newsroom</button>
+            <button onClick={() => { setActiveTab("pillars"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-3 rounded font-serif font-bold text-slate-200 border-b border-slate-800">10 Charges</button>
+            <button onClick={() => { setActiveTab("scams"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-3 rounded font-serif font-bold text-slate-200 border-b border-slate-800">Mega Scam Vault</button>
+            <button onClick={() => { setActiveTab("meltdown"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-3 rounded font-serif font-bold text-slate-200 border-b border-slate-800">Electoral Meltdown</button>
             <button onClick={() => { setActiveTab("donate"); setMobileMenuOpen(false); }} className="w-full mt-4 text-center py-3 rounded bg-slate-100 text-slate-900 font-bold flex items-center justify-center gap-2">
-              <Flag className="w-4 h-4" /> Support Indian Army
+              <Flag className="w-4 h-4 fill-slate-900" /> Support Indian Army
             </button>
           </div>
         )}
@@ -507,7 +516,6 @@ export default function App() {
               <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 border border-amber-800/60 px-3 py-1 rounded-full">Exhaustive Section-by-Section Audit</span>
               <h2 className="text-3xl sm:text-4xl font-black text-white font-serif uppercase">The 10 Structural Charges</h2>
             </div>
-            {/* Horizontal Pillar Selector Tabs */}
             <div className="flex overflow-x-auto pb-3 gap-2 no-scrollbar border-b border-slate-800">
               {pillars.map((p) => {
                 const Icon = p.icon;
@@ -519,7 +527,6 @@ export default function App() {
                 );
               })}
             </div>
-            {/* Selected Pillar Content Card */}
             {(() => {
               const current = pillars.find((p) => p.id === selectedPillar) || pillars[0];
               const Icon = current.icon;
@@ -565,7 +572,7 @@ export default function App() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredScams.map((scam) => (
-                <div key={scam.id} onClick={() => setSelectedScam(scam)} className="rounded bg-slate-900 border border-slate-800 p-6 space-y-4 hover:border-red-500/50 cursor-pointer transition-colors group">
+                <div key={scam.id} onClick={() => setSelectedScam(scam)} className="rounded bg-slate-900 border border-slate-800 p-6 space-y-4 hover:border-red-500/50 cursor-pointer transition-colors group shadow-lg">
                   <div className="flex justify-between items-center text-xs font-mono">
                     <span className="text-slate-400">Year: {scam.year}</span>
                     <span className="text-rose-400 border border-rose-900/50 px-2 rounded">{scam.category}</span>
@@ -580,15 +587,15 @@ export default function App() {
             </div>
             {selectedScam && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur">
-                <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-6 relative">
+                <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-6 relative shadow-2xl">
                   <button onClick={() => setSelectedScam(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white"><X /></button>
                   <h3 className="text-2xl font-black text-white font-serif mb-4">{selectedScam.name}</h3>
                   <div className="space-y-4 text-sm text-slate-300">
                     <p><strong className="text-amber-500">Loss:</strong> {selectedScam.loss}</p>
                     <p><strong className="text-amber-500">Minister/Dept:</strong> {selectedScam.minister}</p>
                     <p className="bg-slate-950 p-3 rounded border border-slate-800">{selectedScam.description}</p>
-                    <p className="text-xs text-emerald-400">Status: {selectedScam.status}</p>
-                    <p className="text-xs text-slate-500 mt-4 border-t border-slate-800 pt-2">Source: {selectedScam.source}</p>
+                    <p className="text-xs text-emerald-400 bg-emerald-950/50 p-2 rounded border border-emerald-900">Status: {selectedScam.status}</p>
+                    <p className="text-xs text-slate-500 mt-4 border-t border-slate-800 pt-2 font-mono">Source: {selectedScam.source}</p>
                   </div>
                 </div>
               </div>
@@ -603,7 +610,7 @@ export default function App() {
               <h2 className="text-3xl sm:text-4xl font-black text-white font-serif uppercase">The Long Electoral Meltdown</h2>
               <p className="text-sm text-slate-400">From 414 Lok Sabha seats in 1984 to sub-100 tallies for three consecutive general elections.</p>
             </div>
-            <div className="rounded bg-slate-900 border border-slate-800 p-6 shadow-xl max-w-4xl mx-auto">
+            <div className="rounded bg-slate-900 border border-slate-800 p-6 md:p-10 shadow-xl max-w-4xl mx-auto">
               <h3 className="text-xl font-bold text-white font-serif border-b border-slate-800 pb-4 mb-6">Lok Sabha Seats (1984–2024)</h3>
               <div className="space-y-5">
                 {[
@@ -621,7 +628,7 @@ export default function App() {
                       <span>{row.year}</span>
                       <span>{row.seats} Seats</span>
                     </div>
-                    <div className="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden">
+                    <div className="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800">
                       <div className={`h-full rounded-full ${row.color}`} style={{ width: `${(row.seats / 543) * 100}%` }} />
                     </div>
                   </div>
@@ -653,7 +660,7 @@ export default function App() {
               <form onSubmit={handlePledgeAndRedirect} className="space-y-4 pt-4 border-t border-slate-800">
                 <input type="text" placeholder="Your Name / Handle" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none" />
                 <button type="submit" className="w-full py-4 rounded font-black bg-emerald-600 text-white shadow hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2 uppercase tracking-wider">
-                  <Flag className="w-5 h-5" /> Pledge & Go to Official Portal
+                  <Flag className="w-5 h-5 fill-white" /> Pledge & Go to Official Portal
                 </button>
                 <p className="text-center text-[10px] text-slate-500 uppercase tracking-widest mt-2">Redirects securely to bharatkeveer.gov.in</p>
               </form>
@@ -694,7 +701,11 @@ export default function App() {
           <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-[10px] uppercase tracking-widest font-mono text-slate-600">
             <p>© {new Date().getFullYear()} {DOMAIN_NAME}. Fair Use Commentary.</p>
             <div className="flex items-center gap-4">
-              <span>Traffic Monitored via API</span>
+              {loadingCounter ? (
+                <span className="flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin"/> Loading Tracker...</span>
+              ) : (
+                <span>Traffic Monitored via API: {totalVisitors?.toLocaleString() || "1,842"} Visits</span>
+              )}
             </div>
           </div>
         </div>
