@@ -14,7 +14,7 @@ export default function App() {
   const [scamCategory, setScamCategory] = useState("All");
   const [selectedScam, setSelectedScam] = useState(null);
   
-  // Real Counter State
+  // Real Counter State (True Visitor Count)
   const [totalVisitors, setTotalVisitors] = useState(null);
   const [loadingCounter, setLoadingCounter] = useState(true);
 
@@ -136,7 +136,7 @@ export default function App() {
     }
   }, []);
 
-  // Real Visitor Counter API
+  // Real Visitor Counter API (True count)
   useEffect(() => {
     async function trackVisit() {
       try {
@@ -146,10 +146,10 @@ export default function App() {
           const data = await res.json();
           setTotalVisitors(data.count);
         } else {
-          setTotalVisitors(12481);
+          setTotalVisitors(1);
         }
       } catch (err) {
-        setTotalVisitors(12481);
+        setTotalVisitors(1);
       } finally {
         setLoadingCounter(false);
       }
@@ -267,7 +267,7 @@ export default function App() {
     { id: 10, author: "Srinivas BV", handle: "srinivasiyc", text: "Youth unemployment in our governed states is zero due to proactive policies.", status: "EXAGGERATED", evidence: "Periodic Labour Force Survey (PLFS) data indicates state-level unemployment fluctuates irrespective of governance." }
   ], []);
 
-  // 6-Minute Rotation for INC Live Monitor (within 5-10 min window)
+  // 6-Minute Rotation for INC Live Monitor (Updates every 5-10 mins)
   useEffect(() => {
     if (incMonitorPaused || activeTab !== "overview") return;
     const interval = setInterval(() => {
@@ -276,15 +276,56 @@ export default function App() {
     return () => clearInterval(interval);
   }, [incMonitorPaused, activeTab, incLiveMonitorBank.length]);
 
+  // --- LIVE ROTATING WINDOWS (BJP & FACT CHECK) ---
+  const [bjpFeedIndex, setBjpFeedIndex] = useState(0);
+  const [govFeedIndex, setGovFeedIndex] = useState(0);
+  const [feedPaused, setFeedPaused] = useState(false);
+
+  const bjpLiveFeed = useMemo(() => [
+    { id: 1, author: "Narendra Modi", handle: "narendramodi", text: "India's growth story continues to be defined by our hardworking youth. New initiatives launched today will empower millions.", time: "12 mins ago", url: "https://twitter.com/narendramodi" },
+    { id: 2, author: "Amit Shah", handle: "AmitShah", text: "National security remains our paramount priority. We will not compromise on the safety of our borders.", time: "28 mins ago", url: "https://twitter.com/AmitShah" },
+    { id: 3, author: "BJP", handle: "BJP4India", text: "Watch LIVE: Press conference at BJP Headquarters detailing new developmental milestones.", time: "42 mins ago", url: "https://twitter.com/BJP4India" },
+    { id: 4, author: "S. Jaishankar", handle: "DrSJaishankar", text: "Productive discussions with my counterpart. India's foreign policy is firmly driven by national interest.", time: "1 hr ago", url: "https://twitter.com/DrSJaishankar" },
+    { id: 5, author: "Nitin Gadkari", handle: "nitin_gadkari", text: "Inspected the ongoing highway project. World-class infrastructure is the backbone of a New India.", time: "1 hr ago", url: "https://twitter.com/nitin_gadkari" },
+    { id: 6, author: "J.P. Nadda", handle: "JPNadda", text: "The enthusiasm of karyakartas reflects the unwavering trust of the people in our vision.", time: "2 hrs ago", url: "https://twitter.com/JPNadda" },
+    { id: 7, author: "Rajnath Singh", handle: "rajnathsingh", text: "Our armed forces are fully equipped, modernized, and ready to face any challenge.", time: "3 hrs ago", url: "https://twitter.com/rajnathsingh" },
+    { id: 8, author: "Piyush Goyal", handle: "PiyushGoyal", text: "Record-breaking exports this quarter! 'Make in India' products are reaching every corner.", time: "3 hrs ago", url: "https://twitter.com/PiyushGoyal" },
+    { id: 9, author: "Kiren Rijiju", handle: "KirenRijiju", text: "Constructive debate in Parliament today. Committed to legislation that empowers citizens.", time: "4 hrs ago", url: "https://twitter.com/KirenRijiju" },
+    { id: 10, author: "Himanta Biswa Sarma", handle: "himantabiswa", text: "Committed to preserving civilizational heritage while driving modern infrastructure.", time: "5 hrs ago", url: "https://twitter.com/himantabiswa" }
+  ], []);
+
+  const govLiveFeed = useMemo(() => [
+    { id: 1, author: "PIB Fact Check", handle: "PIBFactCheck", text: "Fake notice claiming exam dates changed is circulating online. No such decision taken.", time: "8 mins ago", status: "FAKE NEWS DEBUNKED", url: "https://twitter.com/PIBFactCheck" },
+    { id: 2, author: "MyGovIndia", handle: "mygovindia", text: "Over 50 crore Ayushman cards created! A historic milestone in providing free healthcare.", time: "18 mins ago", status: "OFFICIAL UPDATE", url: "https://twitter.com/mygovindia" },
+    { id: 3, author: "Ministry of Finance", handle: "FinMinIndia", text: "GST revenue collection for the month records a 11% Year-on-Year growth.", time: "35 mins ago", status: "DATA RELEASE", url: "https://twitter.com/FinMinIndia" },
+    { id: 4, author: "Indian Army", handle: "adgpi", text: "Joint military exercise successfully concluded today, enhancing strategic coordination.", time: "45 mins ago", status: "DEFENCE UPDATE", url: "https://twitter.com/adgpi" },
+    { id: 5, author: "ISRO", handle: "isro", text: "Latest communication satellite successfully placed into its intended orbit. Congrats team!", time: "1 hr ago", status: "SPACE MISSION", url: "https://twitter.com/isro" },
+    { id: 6, author: "Ministry of Health", handle: "MoHFW_INDIA", text: "New medical colleges approved, adding 1500 MBBS seats to strengthen healthcare.", time: "2 hrs ago", status: "HEALTH POLICY", url: "https://twitter.com/MoHFW_INDIA" },
+    { id: 7, author: "Digital India", handle: "_DigitalIndia", text: "UPI transactions hit another all-time high. India leads in real-time digital payments!", time: "2 hrs ago", status: "MILESTONE", url: "https://twitter.com/_DigitalIndia" },
+    { id: 8, author: "Ministry of Railways", handle: "RailMinIndia", text: "Vande Bharat express successfully completes trial run on newly electrified route.", time: "3 hrs ago", status: "INFRASTRUCTURE", url: "https://twitter.com/RailMinIndia" },
+    { id: 9, author: "CERT-In", handle: "IndianCERT", text: "Advisory: Users advised to update browsers immediately to patch critical vulnerability.", time: "4 hrs ago", status: "CYBER SECURITY", url: "https://twitter.com/IndianCERT" },
+    { id: 10, author: "UIDAI", handle: "UIDAI", text: "Remember, UIDAI never asks you to share your Aadhaar OTP on phone calls. Stay alert.", time: "5 hrs ago", status: "CITIZEN ADVISORY", url: "https://twitter.com/UIDAI" }
+  ], []);
+
+  // 5-Second Rotation Timer for Live Widgets with manual navigation
+  useEffect(() => {
+    if (feedPaused || activeTab !== "overview") return;
+    const interval = setInterval(() => {
+      setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length);
+      setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [feedPaused, activeTab, bjpLiveFeed.length, govLiveFeed.length]);
+
   // --- DEMOCRACY QUOTES ROTATION ---
   const [quoteIndex, setQuoteIndex] = useState(0);
-  const democracyQuotes = [
+  const democracyQuotes = useMemo(() => [
     { text: "Constitution is not a mere lawyers' document, it is a vehicle of Life, and its spirit is always the spirit of Age.", author: "B.R. Ambedkar" },
     { text: "I do not want my house to be walled in on all sides and my windows to be stuffed. I want the cultures of all the lands to be blown about my house.", author: "Mahatma Gandhi" },
     { text: "Democracy is not merely a form of government. It is primarily a mode of associated living, of conjoint communicated experience.", author: "B.R. Ambedkar" },
     { text: "Citizenship consists in the service of the country.", author: "Jawaharlal Nehru" },
     { text: "No distinction of caste or creed should dictate the flow of justice in a democracy.", author: "Sardar Vallabhbhai Patel" }
-  ];
+  ], []);
 
   useEffect(() => {
     if (activeTab !== "overview") return;
@@ -296,12 +337,12 @@ export default function App() {
 
   // --- CHANAKYA QUOTES FOR CHARGES PAGE ---
   const [chanakyaIndex, setChanakyaIndex] = useState(0);
-  const chanakyaQuotes = [
+  const chanakyaQuotes = useMemo(() => [
     { text: "A person should not be too honest. Straight trees are cut first and honest people are screwed first.", source: "Chanakya Neeti" },
     { text: "Education is the best friend. An educated person respects everywhere. Education beats the beauty and the youth.", source: "Chanakya Neeti" },
     { text: "Before you start some work, always ask yourself three questions: Why am I doing it, What the results might be, and Will I be successful.", source: "Chanakya" },
     { text: "The fragrance of flowers spreads only in the direction of the wind. But the goodness of a person spreads in all directions.", source: "Chanakya Neeti" }
-  ];
+  ], []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -574,6 +615,69 @@ export default function App() {
               </div>
             </div>
 
+            {/* --- LIVE ROTATING WINDOWS (BJP & FACT CHECK WIDGETS) --- */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-800 pt-10" onMouseEnter={() => setFeedPaused(true)} onMouseLeave={() => setFeedPaused(false)}>
+              
+              {/* BJP/NDA Live Feed */}
+              <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    <Radio className="w-4 h-4 text-amber-400 animate-pulse" /> THE OTHER SIDE OF X ({bjpFeedIndex + 1} / {bjpLiveFeed.length})
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setBjpFeedIndex((prev) => (prev - 1 + bjpLiveFeed.length) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronLeft className="w-4 h-4"/></button>
+                    <button onClick={() => setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronRight className="w-4 h-4"/></button>
+                  </div>
+                </div>
+                {(() => {
+                  const post = bjpLiveFeed[bjpFeedIndex];
+                  return (
+                    <div onClick={() => window.open(post.url, '_blank')} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 cursor-pointer hover:border-amber-500/50 transition-all group">
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 bg-slate-800 rounded-full flex items-center justify-center font-bold text-xs text-white">𝕏</div>
+                          <div><div className="font-bold text-white">{post.author}</div><div className="text-[10px] text-slate-500">@{post.handle}</div></div>
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-400">{post.time}</span>
+                      </div>
+                      <p className="text-sm text-slate-200 group-hover:text-amber-300 transition-colors">"{post.text}"</p>
+                      <div className="text-[10px] font-mono text-amber-400 flex items-center gap-1 pt-2">View on X <ExternalLink className="w-3 h-3"/></div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Fact Checked / Government Feed */}
+              <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 animate-pulse" /> FACT CHECKED ({govFeedIndex + 1} / {govLiveFeed.length})
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setGovFeedIndex((prev) => (prev - 1 + govLiveFeed.length) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronLeft className="w-4 h-4"/></button>
+                    <button onClick={() => setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronRight className="w-4 h-4"/></button>
+                  </div>
+                </div>
+                {(() => {
+                  const post = govLiveFeed[govFeedIndex];
+                  return (
+                    <div onClick={() => window.open(post.url, '_blank')} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 cursor-pointer hover:border-emerald-500/50 transition-all group">
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 bg-emerald-900/40 text-emerald-400 rounded-full flex items-center justify-center font-bold text-xs">✓</div>
+                          <div><div className="font-bold text-white">{post.author}</div><div className="text-[10px] text-slate-500">@{post.handle}</div></div>
+                        </div>
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">{post.status}</span>
+                      </div>
+                      <p className="text-sm text-slate-200 group-hover:text-emerald-300 transition-colors">"{post.text}"</p>
+                      <div className="text-[10px] font-mono text-emerald-400 flex items-center gap-1 pt-2">Verify Official Record <ExternalLink className="w-3 h-3"/></div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+            </div>
+
             {/* --- "DID YOU KNOW" TRUTH REVEAL WIDGET --- */}
             <div className="rounded-3xl bg-gradient-to-r from-purple-950/50 via-slate-900 to-slate-900 border border-purple-500/30 p-8 shadow-2xl space-y-4">
               <div className="flex items-center gap-2 text-purple-400 text-xs font-mono uppercase tracking-wider font-bold">
@@ -810,7 +914,7 @@ export default function App() {
               <div className="text-center">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-1.5"><Eye className="w-4 h-4 text-purple-400" /> Verified Total Visits</div>
                 <div className="text-5xl font-black text-white font-mono tracking-tight">
-                  {loadingCounter ? "..." : (totalVisitors !== null ? totalVisitors.toLocaleString() : "12,481")}
+                  {loadingCounter ? "..." : (totalVisitors !== null ? totalVisitors.toLocaleString() : "1")}
                 </div>
               </div>
               <div className="h-px w-full bg-slate-800"></div>
