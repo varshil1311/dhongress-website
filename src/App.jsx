@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   AlertTriangle, Flame, Users, Shield, Briefcase, Globe, Factory, Database,
   HeartHandshake, Crown, TrendingDown, Search, ExternalLink, Share2, Heart,
-  ChevronRight, Sparkles, Info, CheckCircle2, Copy, Menu, X, Award, Eye, Flag,
+  ChevronRight, ChevronLeft, Sparkles, Info, CheckCircle2, Copy, Menu, X, Award, Eye, Flag,
   Loader2, Lock, Check, Ban, Radio, Library, FileText, History, Brain, BookOpen, 
   Quote, RefreshCw, Play, XCircle, MessageSquare, BarChart, Scale
 } from "lucide-react";
@@ -88,7 +88,6 @@ export default function App() {
 
       setCsvLoading(true);
       try {
-        // Fetch Election Data
         const elRes = await fetch('/Congress_Election_Database_2014_2026.csv');
         if (elRes.ok) {
           const elText = await elRes.text();
@@ -96,7 +95,6 @@ export default function App() {
           setElectionData(parsedEl);
         }
 
-        // Fetch News Data
         const newsRes = await fetch('/Congress_Corruption_Controversy_News_2014_2026.csv');
         if (newsRes.ok) {
           const newsText = await newsRes.text();
@@ -120,7 +118,6 @@ export default function App() {
     const result = [];
     for (let i = 1; i < lines.length; i++) {
       if (!lines[i].trim()) continue;
-      // Regex matches commas outside of double quotes
       const obj = {};
       const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
       for (let j = 0; j < headers.length; j++) {
@@ -184,7 +181,7 @@ export default function App() {
     { q: "Who was the Finance Minister of India under the UPA government during the 2008 global financial crisis?", opts: ["Manmohan Singh", "Arun Jaitley", "P. Chidambaram", "Yashwant Sinha"], ans: 2, exp: "P. Chidambaram was the Finance Minister during the onset of the crisis." }
   ];
 
-  const [quizState, setQuizState] = useState('idle'); // idle, playing, result
+  const [quizState, setQuizState] = useState('idle');
   const [currentQuizSet, setCurrentQuizSet] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
   const [score, setScore] = useState(0);
@@ -192,7 +189,6 @@ export default function App() {
   const [showExplanation, setShowExplanation] = useState(false);
 
   const startQuiz = () => {
-    // Shuffle and pick 5
     const shuffled = [...fullQuizPool].sort(() => 0.5 - Math.random());
     setCurrentQuizSet(shuffled.slice(0, 5));
     setQuizState('playing');
@@ -224,15 +220,29 @@ export default function App() {
   const [govFeedIndex, setGovFeedIndex] = useState(0);
 
   const bjpLiveFeed = [
-    { id: 1, author: "Narendra Modi", handle: "narendramodi", text: "India's growth story continues to be defined by our hardworking youth. New initiatives launched today will empower millions.", time: "12 mins ago", engagement: "45K Reposts" },
-    { id: 2, author: "Amit Shah", handle: "AmitShah", text: "National security remains our paramount priority. We will not compromise on the safety of our borders.", time: "28 mins ago", engagement: "21K Reposts" },
-    { id: 3, author: "BJP", handle: "BJP4India", text: "Watch LIVE: Press conference at BJP Headquarters.", time: "42 mins ago", engagement: "5K Reposts" }
+    { id: 1, author: "Narendra Modi", handle: "narendramodi", text: "India's growth story continues to be defined by our hardworking youth. New initiatives launched today will empower millions.", time: "12 mins ago", engagement: "45K Reposts", url: "https://twitter.com/narendramodi" },
+    { id: 2, author: "Amit Shah", handle: "AmitShah", text: "National security remains our paramount priority. We will not compromise on the safety of our borders.", time: "28 mins ago", engagement: "21K Reposts", url: "https://twitter.com/AmitShah" },
+    { id: 3, author: "BJP", handle: "BJP4India", text: "Watch LIVE: Press conference at BJP Headquarters.", time: "42 mins ago", engagement: "5K Reposts", url: "https://twitter.com/BJP4India" },
+    { id: 4, author: "S. Jaishankar", handle: "DrSJaishankar", text: "Productive discussions with my counterpart. India's foreign policy is firmly driven by national interest.", time: "1 hr ago", engagement: "12K Reposts", url: "https://twitter.com/DrSJaishankar" },
+    { id: 5, author: "Nitin Gadkari", handle: "nitin_gadkari", text: "Inspected the ongoing highway project. World-class infrastructure is the backbone of a New India.", time: "1 hr ago", engagement: "18K Reposts", url: "https://twitter.com/nitin_gadkari" },
+    { id: 6, author: "J.P. Nadda", handle: "JPNadda", text: "The enthusiasm of karyakartas reflects the unwavering trust of the people in our vision for development.", time: "2 hrs ago", engagement: "8K Reposts", url: "https://twitter.com/JPNadda" },
+    { id: 7, author: "Rajnath Singh", handle: "rajnathsingh", text: "Our armed forces are fully equipped, modernized, and ready to face any challenge to our sovereignty.", time: "3 hrs ago", engagement: "22K Reposts", url: "https://twitter.com/rajnathsingh" },
+    { id: 8, author: "Piyush Goyal", handle: "PiyushGoyal", text: "Record-breaking exports this quarter! 'Make in India' products are reaching every corner of the globe.", time: "3 hrs ago", engagement: "14K Reposts", url: "https://twitter.com/PiyushGoyal" },
+    { id: 9, author: "Kiren Rijiju", handle: "KirenRijiju", text: "Constructive debate in Parliament today. We are committed to passing legislations that empower citizens.", time: "4 hrs ago", engagement: "6K Reposts", url: "https://twitter.com/KirenRijiju" },
+    { id: 10, author: "Himanta Biswa Sarma", handle: "himantabiswa", text: "Committed to preserving our civilizational heritage while driving modern infrastructure development in Assam.", time: "5 hrs ago", engagement: "19K Reposts", url: "https://twitter.com/himantabiswa" }
   ];
 
   const govLiveFeed = [
-    { id: 1, author: "PIB Fact Check", handle: "PIBFactCheck", text: "A fake notice claiming that dates for the upcoming exams have changed is circulating online. No such decision has been taken.", time: "8 mins ago", status: "FAKE NEWS DEBUNKED" },
-    { id: 2, author: "MyGovIndia", handle: "mygovindia", text: "Over 50 crore Ayushman cards created! A historic milestone in providing free healthcare.", time: "18 mins ago", status: "OFFICIAL UPDATE" },
-    { id: 3, author: "Ministry of Finance", handle: "FinMinIndia", text: "GST revenue collection for the month records a 11% Year-on-Year growth.", time: "35 mins ago", status: "DATA RELEASE" }
+    { id: 1, author: "PIB Fact Check", handle: "PIBFactCheck", text: "A fake notice claiming that dates for the upcoming exams have changed is circulating online. No such decision has been taken.", time: "8 mins ago", status: "FAKE NEWS DEBUNKED", url: "https://twitter.com/PIBFactCheck" },
+    { id: 2, author: "MyGovIndia", handle: "mygovindia", text: "Over 50 crore Ayushman cards created! A historic milestone in providing free healthcare.", time: "18 mins ago", status: "OFFICIAL UPDATE", url: "https://twitter.com/mygovindia" },
+    { id: 3, author: "Ministry of Finance", handle: "FinMinIndia", text: "GST revenue collection for the month records a 11% Year-on-Year growth.", time: "35 mins ago", status: "DATA RELEASE", url: "https://twitter.com/FinMinIndia" },
+    { id: 4, author: "Indian Army", handle: "adgpi", text: "Joint military exercise successfully concluded today, enhancing interoperability and strategic coordination.", time: "45 mins ago", status: "DEFENCE UPDATE", url: "https://twitter.com/adgpi" },
+    { id: 5, author: "ISRO", handle: "isro", text: "The latest communication satellite was successfully placed into its intended orbit. Congratulations to the team!", time: "1 hr ago", status: "SPACE MISSION", url: "https://twitter.com/isro" },
+    { id: 6, author: "Ministry of Health", handle: "MoHFW_INDIA", text: "New medical colleges approved, adding 1500 MBBS seats across the country to strengthen healthcare.", time: "2 hrs ago", status: "HEALTH POLICY", url: "https://twitter.com/MoHFW_INDIA" },
+    { id: 7, author: "Digital India", handle: "_DigitalIndia", text: "UPI transactions hit another all-time high this month. India leads the world in real-time digital payments!", time: "2 hrs ago", status: "MILESTONE", url: "https://twitter.com/_DigitalIndia" },
+    { id: 8, author: "Ministry of Railways", handle: "RailMinIndia", text: "Vande Bharat express successfully completes its trial run on the newly electrified route.", time: "3 hrs ago", status: "INFRASTRUCTURE", url: "https://twitter.com/RailMinIndia" },
+    { id: 9, author: "CERT-In", handle: "IndianCERT", text: "Advisory: Users are advised to update their browsers immediately to patch a critical vulnerability.", time: "4 hrs ago", status: "CYBER SECURITY", url: "https://twitter.com/IndianCERT" },
+    { id: 10, author: "UIDAI", handle: "UIDAI", text: "Remember, UIDAI never asks you to share your Aadhaar OTP on phone calls. Stay alert and protect your identity.", time: "5 hrs ago", status: "CITIZEN ADVISORY", url: "https://twitter.com/UIDAI" }
   ];
 
   useEffect(() => {
@@ -240,7 +250,7 @@ export default function App() {
     const interval = setInterval(() => {
       setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length);
       setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length);
-    }, 8000);
+    }, 5000); // Now rotates every 5 seconds
     return () => clearInterval(interval);
   }, [feedPaused, activeTab]);
 
@@ -248,7 +258,9 @@ export default function App() {
   const democracyQuotes = [
     { text: "Constitution is not a mere lawyers' document, it is a vehicle of Life, and its spirit is always the spirit of Age.", author: "B.R. Ambedkar" },
     { text: "I do not want my house to be walled in on all sides and my windows to be stuffed. I want the cultures of all the lands to be blown about my house.", author: "Mahatma Gandhi" },
-    { text: "Democracy is not merely a form of government. It is primarily a mode of associated living, of conjoint communicated experience.", author: "B.R. Ambedkar" }
+    { text: "Democracy is not merely a form of government. It is primarily a mode of associated living, of conjoint communicated experience.", author: "B.R. Ambedkar" },
+    { text: "Citizenship consists in the service of the country.", author: "Jawaharlal Nehru" },
+    { text: "No distinction of caste or creed should dictate the flow of justice in a democracy.", author: "Sardar Vallabhbhai Patel" }
   ];
 
   useEffect(() => {
@@ -458,7 +470,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* LIVE POLITICAL SIGNAL (BJP & GOVT) */}
+            {/* LIVE POLITICAL SIGNAL (BJP & GOVT) WITH ARROWS AND LINKS */}
             <div className="space-y-6 border-t border-slate-800 pt-10">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-black text-white">Live Dashboard Widgets</h2>
@@ -473,11 +485,19 @@ export default function App() {
                       <h3 className="font-black text-cyan-400 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> THE OTHER SIDE OF X</h3>
                       <p className="text-[10px] text-slate-400">Tracking {bjpAccountCount} BJP & NDA Accounts</p>
                     </div>
-                    <div className="text-xs font-mono text-cyan-500 bg-cyan-950 px-2 py-1 rounded">{bjpFeedIndex + 1} / {bjpLiveFeed.length}</div>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setBjpFeedIndex((prev) => (prev - 1 + bjpLiveFeed.length) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-900/50 transition-colors"><ChevronLeft className="w-4 h-4"/></button>
+                      <div className="text-xs font-mono text-cyan-500 bg-cyan-950 px-2 py-1 rounded min-w-[36px] text-center">{bjpFeedIndex + 1} / {bjpLiveFeed.length}</div>
+                      <button onClick={() => setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-900/50 transition-colors"><ChevronRight className="w-4 h-4"/></button>
+                    </div>
                   </div>
-                  <div className="p-6 flex-grow relative">
+                  <div className="relative flex-grow">
                     {bjpLiveFeed.map((post, i) => (
-                      <div key={post.id} className={`absolute inset-0 p-6 flex flex-col justify-center transition-opacity duration-500 ${i === bjpFeedIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}>
+                      <div 
+                        key={post.id} 
+                        onClick={() => window.open(post.url, '_blank')}
+                        className={`absolute inset-0 p-6 flex flex-col justify-center transition-all duration-500 cursor-pointer hover:bg-slate-800/40 rounded-b-3xl ${i === bjpFeedIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}
+                      >
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs">𝕏</div>
@@ -498,11 +518,19 @@ export default function App() {
                       <h3 className="font-black text-emerald-400 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> FACT CHECKED</h3>
                       <p className="text-[10px] text-slate-400">Tracking {govAccountCount} Govt & Fact Accounts</p>
                     </div>
-                    <div className="text-xs font-mono text-emerald-500 bg-emerald-950 px-2 py-1 rounded">{govFeedIndex + 1} / {govLiveFeed.length}</div>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setGovFeedIndex((prev) => (prev - 1 + govLiveFeed.length) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-emerald-900/50 transition-colors"><ChevronLeft className="w-4 h-4"/></button>
+                      <div className="text-xs font-mono text-emerald-500 bg-emerald-950 px-2 py-1 rounded min-w-[36px] text-center">{govFeedIndex + 1} / {govLiveFeed.length}</div>
+                      <button onClick={() => setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-emerald-900/50 transition-colors"><ChevronRight className="w-4 h-4"/></button>
+                    </div>
                   </div>
-                  <div className="p-6 flex-grow relative">
+                  <div className="relative flex-grow">
                     {govLiveFeed.map((post, i) => (
-                      <div key={post.id} className={`absolute inset-0 p-6 flex flex-col justify-center transition-opacity duration-500 ${i === govFeedIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}>
+                      <div 
+                        key={post.id} 
+                        onClick={() => window.open(post.url, '_blank')}
+                        className={`absolute inset-0 p-6 flex flex-col justify-center transition-all duration-500 cursor-pointer hover:bg-slate-800/40 rounded-b-3xl ${i === govFeedIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}
+                      >
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-full bg-emerald-900/50 flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-emerald-400" /></div>
@@ -610,6 +638,22 @@ export default function App() {
                   <p className="text-xs text-slate-400 leading-relaxed">{word.d}</p>
                 </div>
               ))}
+            </div>
+
+            {}
+            {/* WORDS THAT BUILT DEMOCRACY */}
+            <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl mt-20 text-center space-y-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white flex items-center justify-center gap-3 relative z-10">
+                <BookOpen className="w-8 h-8 text-cyan-400" /> WORDS THAT BUILT DEMOCRACY
+              </h2>
+              <div className="relative min-h-[160px] flex items-center justify-center max-w-4xl mx-auto">
+                <Quote className="absolute top-0 left-0 w-16 h-16 text-slate-800/80 -z-10 -mt-6 -ml-6" />
+                <div key={quoteIndex} className="animate-in fade-in duration-700 z-10 space-y-6">
+                  <p className="text-xl sm:text-2xl text-slate-300 font-serif italic leading-relaxed">"{democracyQuotes[quoteIndex].text}"</p>
+                  <p className="text-sm font-bold text-cyan-400 uppercase tracking-widest">— {democracyQuotes[quoteIndex].author}</p>
+                </div>
+              </div>
             </div>
 
           </div>
