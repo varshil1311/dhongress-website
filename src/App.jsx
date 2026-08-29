@@ -23,7 +23,7 @@ export default function App() {
   const [adminPin, setAdminPin] = useState("");
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
-  // Live Dynamic Data
+  // Live Dynamic Data Counts
   const [bjpAccountCount, setBjpAccountCount] = useState(32);
   const [govAccountCount, setGovAccountCount] = useState(45);
   const [incAccountCount, setIncAccountCount] = useState(20);
@@ -71,6 +71,19 @@ export default function App() {
     setNewCommentText("");
   };
 
+  // --- "DID YOU KNOW" TRUTH REVEAL WIDGET STATE ---
+  const darkSecretsBank = [
+    { title: "The 1975 Emergency Press Shutdown", detail: "During the 21-month Emergency, power supply to newspaper offices in Delhi was deliberately cut off overnight to prevent publication of dissent." },
+    { title: "Kissa Kursi Ka Masterprint Burning", detail: "Supreme Court and judicial inquiry records confirmed that master reels of political satire film 'Kissa Kursi Ka' were seized and burned during the 1970s." },
+    { title: "The Shah Bano Case Overturn", detail: "In 1985, Parliament passed a law to nullify the Supreme Court's maintenance ruling for divorced women under pressure from conservative lobbies." },
+    { title: "The 1984 Anti-Sikh Riots Official Inquiries", detail: "Multiple judicial committees over decades documented severe administrative lapses and delayed mobilization of security forces during the 1984 tragedy." },
+    { title: "Antrix-Devas S-Band Cancellation", detail: "The UPA government annulled the Antrix-Devas commercial agreement in 2011, citing national security implications over allocation of rare S-band spectrum." }
+  ];
+  const [secretIndex, setSecretIndex] = useState(0);
+  const handleNextSecret = () => {
+    setSecretIndex((prev) => (prev + 1) % darkSecretsBank.length);
+  };
+
   // Geo-Location IP Detection & Auto Language Mapping
   useEffect(() => {
     async function detectUserLocationAndLang() {
@@ -100,7 +113,6 @@ export default function App() {
     detectUserLocationAndLang();
   }, []);
 
-  // Google Translate Trigger Helper
   const handleLanguageChange = (langCode) => {
     setCurrentLang(langCode);
     try {
@@ -109,7 +121,6 @@ export default function App() {
         selectField.value = langCode;
         selectField.dispatchEvent(new Event("change"));
       } else {
-        // Fallback cookie setter for google translate
         document.cookie = `googtrans=/en/${langCode}`;
         window.location.reload();
       }
@@ -125,6 +136,7 @@ export default function App() {
     }
   }, []);
 
+  // Real Visitor Counter API
   useEffect(() => {
     async function trackVisit() {
       try {
@@ -201,47 +213,7 @@ export default function App() {
     { q: "What was the estimated presumptive loss to the exchequer in the Coalgate scam according to the CAG?", opts: ["₹70,000 Cr", "₹1.76 Lakh Cr", "₹1.86 Lakh Cr", "₹5,000 Cr"], ans: 2, exp: "The CAG estimated a presumptive loss of ₹1.86 Lakh Crore due to arbitrary coal block allocations." },
     { q: "Who was the Prime Minister of India when the historic 1991 economic liberalization reforms were introduced?", opts: ["Rajiv Gandhi", "PV Narasimha Rao", "Manmohan Singh", "VP Singh"], ans: 1, exp: "PV Narasimha Rao was the PM, with Dr. Manmohan Singh serving as his Finance Minister." },
     { q: "The Shah Bano case (1985) ruling by the Supreme Court was overturned by parliament. What was the core issue?", opts: ["Triple Talaq", "Women's Alimony/Maintenance", "Property Rights", "Voting Rights"], ans: 1, exp: "The SC granted maintenance to a divorced Muslim woman, but the Rajiv Gandhi govt passed a law diluting it." },
-    { q: "Which UPA-era minister was jailed in connection with the Commonwealth Games (CWG) corruption scandal?", opts: ["A. Raja", "P. Chidambaram", "Suresh Kalmadi", "Kapil Sibal"], ans: 2, exp: "Suresh Kalmadi, organizing committee chairman, was arrested for massive financial irregularities." },
-    { q: "In the 2019 Lok Sabha elections, how many seats did the Congress party win?", opts: ["44", "52", "99", "114"], ans: 1, exp: "The Congress won 52 seats, failing again to secure the 10% required for formal Leader of Opposition status." },
-    { q: "Which constitutional amendment added the words 'Secular' and 'Socialist' to the Preamble of the Indian Constitution?", opts: ["42nd", "44th", "73rd", "86th"], ans: 0, exp: "The 42nd Amendment, passed during the Emergency in 1976." },
-    { q: "The National Herald case involves the transfer of ₹5,000 Cr worth of assets to Young Indian Ltd. Who owns 76% of Young Indian?", opts: ["The Govt of India", "Rahul and Sonia Gandhi", "Associated Journals Ltd", "AICC Trust"], ans: 1, exp: "Rahul and Sonia Gandhi hold a combined 76% stake in Young Indian Ltd." },
-    { q: "Which global defense manufacturer was involved in a kickback scandal for VVIP helicopters in 2013?", opts: ["Dassault", "Boeing", "AgustaWestland", "Lockheed Martin"], ans: 2, exp: "AgustaWestland was accused of paying bribes to alter helicopter flight ceiling requirements." },
-    { q: "True or False: The Congress party won a full parliamentary majority in the 2004 General Elections.", opts: ["True", "False"], ans: 1, exp: "False. They won 145 seats and formed the UPA coalition government." },
-    { q: "What controversial action did Rahul Gandhi take during a 2013 press conference regarding a UPA government ordinance?", opts: ["Resigned from party", "Tore up the ordinance copy", "Walked out silently", "Endorsed it completely"], ans: 1, exp: "He publicly denounced and tore up the ordinance meant to protect convicted politicians." },
-    { q: "Which article of the Indian Constitution, granting special autonomous status to Jammu & Kashmir, was abrogated in 2019?", opts: ["Article 356", "Article 370", "Article 371", "Article 324"], ans: 1, exp: "Article 370 was abrogated, fully integrating J&K into the Indian Union." },
-    { q: "In 2012, the UPA government introduced 'Retrospective Taxation', famously affecting which major telecom company?", opts: ["Airtel", "Jio", "Vodafone", "Idea"], ans: 2, exp: "The retroactive tax amendment severely damaged foreign investor confidence in India." },
-    { q: "Who is the longest-serving President of the Indian National Congress?", opts: ["Jawaharlal Nehru", "Indira Gandhi", "Sonia Gandhi", "Rahul Gandhi"], ans: 2, exp: "Sonia Gandhi served as party president for a total of over 20 years." },
-    { q: "Which defense scandal in 1987 involving Swedish field howitzers severely damaged Rajiv Gandhi's government?", opts: ["Rafale Deal", "Bofors Scandal", "Submarine Scam", "Jeep Scandal"], ans: 1, exp: "The Bofors scandal involved allegations of kickbacks to politicians and middlemen." },
-    { q: "What does 'Anti-incumbency' mean in Indian electoral politics?", opts: ["Voting against the current ruling party", "Voting against electronic machines", "Voting multiple times", "Boycotting elections"], ans: 0, exp: "A widespread voter sentiment to remove the incumbent government from power." },
-    { q: "Which state in India has never been ruled by the BJP independently or in coalition as of recent decades?", opts: ["Tamil Nadu", "Goa", "Assam", "Tripura"], ans: 0, exp: "Tamil Nadu has maintained a regional party duopoly (DMK/AIADMK)." },
-    { q: "Which commission recommended 27% reservation for OBCs in government jobs, implemented in 1990?", opts: ["Kothari Commission", "Mandal Commission", "Sarkaria Commission", "Shah Commission"], ans: 1, exp: "The Mandal Commission recommendations changed the landscape of Indian caste politics." },
-    { q: "What was the 'Hindu Rate of Growth'?", opts: ["A boom in religious tourism", "Stagnant 3.5% economic growth before 1990", "Population growth rate", "Agricultural yield"], ans: 1, exp: "A term describing India's low, stagnant economic growth under socialist policies from the 1950s to 1980s." },
-    { q: "In what year did the Right to Information (RTI) Act come into force?", opts: ["2000", "2005", "2010", "2014"], ans: 1, exp: "The RTI Act was passed in 2005, providing a powerful tool for civic transparency." },
-    { q: "True or False: A Chargesheet is the same as a Conviction.", opts: ["True", "False"], ans: 1, exp: "False. A chargesheet is a formal accusation by law enforcement. Conviction is pronounced by a judge." },
-    { q: "Which former Congress PM was famously denied a memorial in Delhi and entry to the AICC headquarters after death?", opts: ["Lal Bahadur Shastri", "Rajiv Gandhi", "PV Narasimha Rao", "Indira Gandhi"], ans: 2, exp: "Despite his historic economic reforms, Rao was largely ostracized by the party leadership." },
-    { q: "The 'Adarsh Housing Society' scam involved luxury apartments in Mumbai meant for whom?", opts: ["Slum dwellers", "Kargil war widows and veterans", "Olympic athletes", "Retired politicians"], ans: 1, exp: "The apartments were illegally allocated to politicians, bureaucrats, and military top brass." },
-    { q: "What was India's rank on the World Bank's Ease of Doing Business index in 2014 before major reforms?", opts: ["55th", "100th", "142nd", "180th"], ans: 2, exp: "India was ranked a dismal 142nd, reflecting severe red tape and bureaucratic hurdles." },
-    { q: "Which term is used when politicians switch parties after being elected, which the Anti-Defection Law tries to prevent?", opts: ["Filibustering", "Horse-trading / Defection", "Gerrymandering", "Lobbying"], ans: 1, exp: "Defection (Aaya Ram Gaya Ram politics) undermines electoral mandates." },
-    { q: "In 1975, the Allahabad High Court found Indira Gandhi guilty of what?", opts: ["Financial embezzlement", "Electoral malpractice", "Treason", "Contempt of court"], ans: 1, exp: "She was found guilty of using state machinery for her election campaign, triggering the Emergency." },
-    { q: "Which institution is responsible for conducting Lok Sabha elections in India?", opts: ["Supreme Court", "Ministry of Home Affairs", "Election Commission of India", "NITI Aayog"], ans: 2, exp: "The ECI is an autonomous constitutional authority responsible for administering elections." },
-    { q: "True or False: The Indian National Congress won the 2009 Lok Sabha elections with an absolute majority of 272+ seats.", opts: ["True", "False"], ans: 1, exp: "False. They won 206 seats and required coalition partners to form UPA-2." },
-    { q: "What was the 'Hawala Scandal' of the 1990s?", opts: ["Illegal coal mining", "A massive bribery ring involving politicians across parties", "Stock market manipulation", "Defense procurement"], ans: 1, exp: "It involved illegal payments routed through hawala brokers to top politicians." },
-    { q: "Which Indian state has the highest number of Lok Sabha seats?", opts: ["Maharashtra", "West Bengal", "Uttar Pradesh", "Bihar"], ans: 2, exp: "Uttar Pradesh has 80 Lok Sabha seats, making it crucial for forming a national government." },
-    { q: "The 'Office of Profit' controversy in 2006 forced which senior leader to briefly resign from the Lok Sabha?", opts: ["Manmohan Singh", "Sonia Gandhi", "L.K. Advani", "A.B. Vajpayee"], ans: 1, exp: "Sonia Gandhi resigned and sought re-election after holding the NAC chairperson post." },
-    { q: "What does 'FDI' stand for in economic policy?", opts: ["Federal Department of Investigation", "Foreign Direct Investment", "Financial Deficit Indicator", "Fiscal Dividend Index"], ans: 1, exp: "FDI refers to investment from foreign entities into domestic businesses." },
-    { q: "Who was the Finance Minister of India under the UPA government during the 2008 global financial crisis?", opts: ["Manmohan Singh", "Arun Jaitley", "P. Chidambaram", "Yashwant Sinha"], ans: 2, exp: "P. Chidambaram was the Finance Minister during the onset of the crisis." },
-    { q: "What was the 'Fragile Five' term used by Morgan Stanley in 2013 to describe?", opts: ["Economies heavily reliant on foreign investment", "Banks facing bankruptcy", "Coal block allocators", "Telecom companies"], ans: 0, exp: "It described economies vulnerable to sudden capital outflows, including India." },
-    { q: "Which Supreme Court ruling struck down Section 66A of the IT Act in 2015?", opts: ["Shreya Singhal v. Union of India", "Kesavananda Bharati", "Shah Bano case", "Maneka Gandhi"], ans: 0, exp: "Shreya Singhal v. Union of India struck down the draconian online free-speech restriction." },
-    { q: "Which Congress president was unceremoniously removed in 1998 to make way for Sonia Gandhi?", opts: ["Sitaram Kesri", "Narasimha Rao", "Pranab Mukherjee", "Kamaraj"], ans: 0, exp: "Kesri was removed after internal party maneuvers at AICC headquarters." },
-    { q: "What was the primary focus of the Shunglu Committee in 2010?", opts: ["Agricultural distress", "2G Spectrum pricing", "CWG infrastructure delays and corruption", "Defense procurement"], ans: 2, exp: "It investigated massive irregularities in the 2010 Commonwealth Games infrastructure." },
-    { q: "How many continuous years did Jawaharlal Nehru serve as Prime Minister?", opts: ["10", "12", "17", "22"], ans: 2, exp: "Nehru served for 17 years from 1947 until his death in 1964." },
-    { q: "The 'Air India Fleet Acquisition' scam involved ordering how many unnecessary aircraft?", opts: ["25", "68", "111", "200"], ans: 2, exp: "The UPA ordered 111 aircraft worth ₹67,000 Cr, pushing the profitable airline into massive debt." },
-    { q: "What does 'CAG' stand for in India?", opts: ["Central Audit Group", "Comptroller and Auditor General", "Council of Audit Governance", "Chief Auditor of Government"], ans: 1, exp: "The CAG is the supreme audit institution of India." },
-    { q: "True or False: 'The Hindu Rate of Growth' was coined by economist Raj Krishna.", opts: ["True", "False"], ans: 0, exp: "True. He coined the term in the late 1970s to describe stagnant socialist growth." },
-    { q: "Which major space spectrum deal was cancelled by the UPA government in 2011 to avoid a mega scam?", opts: ["ISRO-SpaceX", "Antrix-Devas", "BSNL-Starlink", "Airtel-Sat"], ans: 1, exp: "The Antrix-Devas deal involved leasing rare S-band spectrum at throwaway prices." },
-    { q: "What is an Ordinance in the context of the Indian Constitution?", opts: ["A permanent law passed by Parliament", "A temporary law promulgated by the President", "A Supreme Court ruling", "A state assembly bill"], ans: 1, exp: "An ordinance is a temporary law issued when Parliament is not in session." },
-    { q: "The 42nd Amendment of the Constitution was passed in which year?", opts: ["1975", "1976", "1977", "1980"], ans: 1, exp: "Passed in 1976 during the Emergency." },
-    { q: "Who authored the book 'India Wins Freedom'?", opts: ["Jawaharlal Nehru", "Maulana Abul Kalam Azad", "Sardar Patel", "Rajendra Prasad"], ans: 1, exp: "Maulana Abul Kalam Azad's memoir offers critical historical insights." }
+    { q: "Which UPA-era minister was jailed in connection with the Commonwealth Games (CWG) corruption scandal?", opts: ["A. Raja", "P. Chidambaram", "Suresh Kalmadi", "Kapil Sibal"], ans: 2, exp: "Suresh Kalmadi, organizing committee chairman, was arrested for massive financial irregularities." }
   ];
 
   const [quizState, setQuizState] = useState('idle');
@@ -289,38 +261,18 @@ export default function App() {
     { id: 4, author: "Mallikarjun Kharge", handle: "kharge", text: "Public sector undertakings were built entirely by our administrations without any private contribution.", status: "FALSE", evidence: "PSUs like IISCO and TISCO were private enterprises prior to nationalization waves." },
     { id: 5, author: "Supriya Shrinate", handle: "SupriyaShrinate", text: "Inflation has never been higher in the history of independent India than it is right now.", status: "MISLEADING", evidence: "Wholesale and consumer price inflation touched double digits (10.9%) during UPA-2 in 2013." },
     { id: 6, author: "Kanhaiya Kumar", handle: "kanhaiyakumar", text: "Every single higher education institution in India was established before 2014.", status: "FALSE", evidence: "Data from Ministry of Education records hundreds of universities and IITs established post-2014." },
-    { id: 7, author: "INC Madhya Pradesh", handle: "INCMP", text: "Farmers received zero loan waivers during the past decade across central schemes.", status: "FALSE", evidence: "PM-KISAN and institutional agricultural credit credit disbursals exceeded ₹20 Lakh Crore." },
+    { id: 7, author: "INC Madhya Pradesh", handle: "INCMP", text: "Farmers received zero loan waivers during the past decade across central schemes.", status: "FALSE", evidence: "PM-KISAN and institutional agricultural credit disbursals exceeded ₹20 Lakh Crore." },
     { id: 8, author: "Priyanka Gandhi", handle: "priyankagandhi", text: "Rural sanitation was non-existent and ignored until recently.", status: "MISLEADING", evidence: "Rural sanitation coverage stood below 39% in 2014 after decades of slow progress." },
     { id: 9, author: "Jairam Ramesh", handle: "Jairam_Ramesh", text: "Environmental clearances were never bypassed for industrial projects previously.", status: "DISPUTED", evidence: "The Western Ghats ecology reports and numerous UPA-era clearances faced severe environmental critiques." },
-    { id: 10, author: "Srinivas BV", handle: "srinivasiyc", text: "Youth unemployment in our governed states is zero due to proactive policies.", status: "EXAGGERATED", evidence: "Periodic Labour Force Survey (PLFS) data indicates state-level unemployment fluctuates irrespective of governance." },
-    { id: 11, author: "Rahul Gandhi", handle: "RahulGandhi", text: "Foreign Direct Investment into India has completely stopped.", status: "FALSE", evidence: "India registered record high annual FDI inflows exceeding $80 Billion consecutively in recent years." },
-    { id: 12, author: "INC Official", handle: "INCIndia", text: "Our party never imposed emergency rule or curbed press freedom.", status: "FALSE", evidence: "The 1975-1977 Emergency officially suspended fundamental rights and instituted pre-censorship." },
-    { id: 13, author: "Pawan Khera", handle: "Pawankhera", text: "Defense manufacturing in India was 100% self-reliant before 2014.", status: "FALSE", evidence: "India imported over 70% of its defense equipment requirement prior to 2014 indigenization pushes." },
-    { id: 14, author: "Mallikarjun Kharge", handle: "kharge", text: "Railway networks were never expanded or electrified during the previous decade.", status: "FALSE", evidence: "Over 40,000+ route kilometers were electrified and Vande Bharat trains were introduced." },
-    { id: 15, author: "Supriya Shrinate", handle: "SupriyaShrinate", text: "Digital banking and UPI transactions were invented by the UPA government.", status: "FALSE", evidence: "UPI was officially launched by NPCI in 2016 under RBI guidance." },
-    { id: 16, author: "Kanhaiya Kumar", handle: "kanhaiyakumar", text: "Poverty levels have increased over the last 10 years according to global economists.", status: "FALSE", evidence: "NITI Aayog and IMF reports confirmed over 25 Crore people escaped multidimensional poverty." },
-    { id: 17, author: "INC Official", handle: "INCIndia", text: "We cleared all dues regarding coal block allocations transparently.", status: "DISPUTED", evidence: "Supreme Court in 2014 termed 214 coal block allocations illegal and arbitrary." },
-    { id: 18, author: "Rahul Gandhi", handle: "RahulGandhi", text: "The Constitution of India is under direct threat of being abolished entirely.", status: "RHETORICAL", evidence: "The basic structure doctrine upheld by the Supreme Court prevents any total abrogation of the Constitution." },
-    { id: 19, author: "Priyanka Gandhi", handle: "priyankagandhi", text: "Women safety laws were robust and fully enforced during our tenure without gaps.", status: "DISPUTED", evidence: "National Crime Records Bureau (NCRB) data showed consistent reporting backlogs across decades." },
-    { id: 20, author: "Jairam Ramesh", handle: "Jairam_Ramesh", text: "Aadhaar was entirely conceptualized and executed by the UPA without opposition.", status: "MISLEADING", evidence: "Key opposition leaders initially raised severe privacy and financial feasibility concerns against Aadhaar." },
-    { id: 21, author: "Rahul Gandhi", handle: "RahulGandhi", text: "India's GDP growth is entirely fake and manipulated by government statisticians.", status: "FALSE", evidence: "India's growth metrics follow UN and IMF statistical guidelines and are audited globally." },
-    { id: 22, author: "INC Official", handle: "INCIndia", text: "No major infrastructure projects were completed prior to 2014.", status: "FALSE", evidence: "Projects like Golden Quadrilateral and Delhi Metro Phase-1/2 were monumental prior milestones." },
-    { id: 23, author: "Supriya Shrinate", handle: "SupriyaShrinate", text: "Manufacturing sector share of GDP was at an all-time high during UPA rule.", status: "FALSE", evidence: "Manufacturing hovered stubbornly around 15% of GDP for decades before recent PLI schemes." },
-    { id: 24, author: "Mallikarjun Kharge", handle: "kharge", text: "Public healthcare spending was never reduced under our watch.", status: "MISLEADING", evidence: "Health expenditure remained below 1.2% of GDP throughout most of the 2000s." },
-    { id: 25, author: "Pawan Khera", handle: "Pawankhera", text: "Every public sector bank was profitable and healthy before 2014.", status: "FALSE", evidence: "Public banks suffered massive asset quality reviews in 2015 revealing hidden NPAs from 2008-2013." },
-    { id: 26, author: "Kanhaiya Kumar", handle: "kanhaiyakumar", text: "Unemployment rates in India are the highest in recorded world history.", status: "EXAGGERATED", evidence: "Global labor surveys place many advanced economies with higher or comparable post-pandemic unemployment rates." },
-    { id: 27, author: "Priyanka Gandhi", handle: "priyankagandhi", text: "Power grids never collapsed or faced blackouts during our governance.", status: "FALSE", evidence: "The 2012 India blackout left over 620 million people without power, the largest outage in human history." },
-    { id: 28, author: "Jairam Ramesh", handle: "Jairam_Ramesh", text: "Forest cover decreased continuously over the last decade.", status: "FALSE", evidence: "State of India's Forest Report (ISFR) recorded consistent net increases in total forest and tree cover." },
-    { id: 29, author: "Rahul Gandhi", handle: "RahulGandhi", text: "Farmers' incomes were doubled successfully by 2010 as promised.", status: "FALSE", evidence: "Agricultural growth averaged around 3% during UPA, with widespread agrarian distress and high farmer suicides." },
-    { id: 30, author: "INC Official", handle: "INCIndia", text: "We introduced the Direct Benefit Transfer system without any leakage.", status: "DISPUTED", evidence: "While DBT plugged loopholes, early implementation faced significant biometric authentication failures." }
+    { id: 10, author: "Srinivas BV", handle: "srinivasiyc", text: "Youth unemployment in our governed states is zero due to proactive policies.", status: "EXAGGERATED", evidence: "Periodic Labour Force Survey (PLFS) data indicates state-level unemployment fluctuates irrespective of governance." }
   ];
 
-  // 6-Minute Rotation for INC Live Monitor (360,000 ms)
+  // 7-Minute Rotation for INC Live Monitor
   useEffect(() => {
     if (incMonitorPaused || activeTab !== "overview") return;
     const interval = setInterval(() => {
       setIncLiveMonitorIndex((prev) => (prev + 1) % incLiveMonitorBank.length);
-    }, 360000); // 6 minutes rotation
+    }, 420000);
     return () => clearInterval(interval);
   }, [incMonitorPaused, activeTab, incLiveMonitorBank.length]);
 
@@ -361,7 +313,7 @@ export default function App() {
     const interval = setInterval(() => {
       setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length);
       setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length);
-    }, 5000); // exactly 5 seconds
+    }, 5000);
     return () => clearInterval(interval);
   }, [feedPaused, activeTab]);
 
@@ -533,7 +485,7 @@ export default function App() {
   ];
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-purple-500 selection:text-white ${activeTab === 'overview' ? 'bg-[#0f172a] text-slate-100' : activeTab === 'dark-archive' ? 'bg-[#050505] text-amber-500' : 'bg-slate-950 text-slate-100'}`}>
+    <div className="min-h-screen font-sans selection:bg-purple-500 selection:text-white bg-[#0f172a] text-slate-100">
       
       {/* 1. BHARAT KE VEER TOP BANNER & GOOGLE TRANSLATE WIDGET */}
       <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 px-4 py-2.5 text-xs md:text-sm font-black text-center text-white flex items-center justify-between gap-2 shadow-lg tracking-wide">
@@ -566,7 +518,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Hidden Google Translate Element to empower native DOM translation */}
       <div id="google_translate_element" style={{ display: 'none' }}></div>
 
       {/* 2. MAIN HEADER / NAVIGATION */}
@@ -637,9 +588,9 @@ export default function App() {
         {activeTab === "overview" && (
           <div className="space-y-16 animate-in fade-in duration-500">
             
-            {/* HERO & STATS */}
+            {/* HERO SECTION */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-3 space-y-6 text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold tracking-wider uppercase shadow-inner">
                   <Flame className="w-4 h-4 text-purple-400 animate-pulse" />
                   SATIRICAL ARCHIVE & POLITICAL LORE
@@ -647,45 +598,34 @@ export default function App() {
                 <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-[1.1]">
                   Demanding in Opposition What They <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Destroyed in Power.</span>
                 </h1>
-                <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+                <p className="text-lg text-slate-300 max-w-3xl leading-relaxed mx-auto lg:mx-0">
                   Touch grass, then check the data. A fact-checked, satirical exposure of 60 years of dynastic monopoly, historical flip-flops, and missing receipts. No cap.
                 </p>
-                <div className="flex flex-wrap gap-3 pt-2">
+                <div className="flex flex-wrap gap-3 justify-center lg:justify-start pt-2">
                   <button onClick={() => setActiveTab("pillars")} className="px-6 py-3.5 rounded-full font-bold bg-purple-600 text-white hover:bg-purple-500 transition-all flex items-center gap-2 shadow-lg shadow-purple-500/20">
                     Read The 10 Charges <ChevronRight className="w-4 h-4" />
                   </button>
+                  <button onClick={() => setActiveTab("scams")} className="px-6 py-3.5 rounded-full font-bold bg-slate-800 border border-slate-700 text-amber-400 hover:bg-slate-700 transition-all flex items-center gap-2 shadow-lg">
+                    <Database className="w-4 h-4" /> Scam Vault
+                  </button>
                   <button onClick={() => setActiveTab("dark-archive")} className="px-6 py-3.5 rounded-full font-bold bg-slate-800 border border-slate-700 text-red-400 hover:bg-slate-700 transition-all flex items-center gap-2 shadow-lg">
-                    <FolderLock className="w-4 h-4" /> Explore Dark Archive
+                    <FolderLock className="w-4 h-4" /> Dark Archive
                   </button>
                 </div>
               </div>
+            </div>
 
-              {/* Stats Panel */}
-              <div className="bg-slate-900/90 backdrop-blur rounded-3xl p-6 border border-slate-800 shadow-2xl space-y-6">
-                <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Eye className="w-4 h-4 text-purple-400" /> Verified Total Visits</div>
-                  <div className="text-4xl font-black text-white font-mono tracking-tight">
-                    {loadingCounter ? "..." : (totalVisitors !== null ? totalVisitors.toLocaleString() : "12,481")}
-                  </div>
-                </div>
-                <div className="h-px w-full bg-slate-800"></div>
-                <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Radio className="w-4 h-4 text-cyan-400" /> Tracked Accounts</div>
-                  <div className="flex gap-4 mt-2">
-                    <div>
-                      <div className="text-2xl font-black text-cyan-400 font-mono">{bjpAccountCount}</div>
-                      <div className="text-[10px] font-bold text-slate-500 uppercase">BJP/NDA</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-black text-emerald-400 font-mono">{govAccountCount}</div>
-                      <div className="text-[10px] font-bold text-slate-500 uppercase">Govt/Fact</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-black text-purple-400 font-mono">{incAccountCount}</div>
-                      <div className="text-[10px] font-bold text-slate-500 uppercase">INC/INDIA</div>
-                    </div>
-                  </div>
-                </div>
+            {/* --- "DID YOU KNOW" TRUTH REVEAL WIDGET --- */}
+            <div className="rounded-3xl bg-gradient-to-r from-purple-950/50 via-slate-900 to-slate-900 border border-purple-500/30 p-8 shadow-2xl space-y-4">
+              <div className="flex items-center gap-2 text-purple-400 text-xs font-mono uppercase tracking-wider font-bold">
+                <Brain className="w-4 h-4 animate-bounce" /> Did You Know This About the Indian National Congress Party?
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-white font-serif">{darkSecretsBank[secretIndex].title}</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">{darkSecretsBank[secretIndex].detail}</p>
+              <div className="pt-2">
+                <button onClick={handleNextSecret} className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg">
+                  Show Me The Truth 🕵️‍♂️
+                </button>
               </div>
             </div>
 
@@ -768,7 +708,7 @@ export default function App() {
 
             </div>
 
-            {/* --- ANONYMOUS COMMUNITY COMMENTS SECTION --- */}
+            {/* --- ANONYMOUS COMMUNITY COMMENTS SECTION (NO LOGIN REQUIRED) --- */}
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl mt-12">
               <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
                 <MessageSquare className="w-6 h-6 text-cyan-400" />
@@ -814,83 +754,6 @@ export default function App() {
                     <p className="text-xs text-slate-300">{c.text}</p>
                   </div>
                 ))}
-              </div>
-            </div>
-
-            {/* LIVE POLITICAL SIGNAL WIDGETS */}
-            <div className="space-y-6 border-t border-slate-800 pt-10">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black text-white">Live Dashboard Widgets</h2>
-                <span className="text-xs font-mono font-bold bg-slate-800 text-slate-400 px-2 py-1 rounded">Last 60 Mins (10 Tweets)</span>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* BJP WINDOW */}
-                <div className="bg-slate-900 rounded-3xl border border-cyan-900/50 shadow-lg overflow-hidden flex flex-col h-[320px]" onMouseEnter={() => setFeedPaused(true)} onMouseLeave={() => setFeedPaused(false)}>
-                  <div className="bg-cyan-950/30 px-5 py-4 border-b border-slate-800 flex justify-between items-center">
-                    <div>
-                      <h3 className="font-black text-cyan-400 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> THE OTHER SIDE OF X</h3>
-                      <p className="text-[10px] text-slate-400">Tracking {bjpAccountCount} BJP & NDA Accounts</p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setBjpFeedIndex((prev) => (prev - 1 + bjpLiveFeed.length) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-900/50 transition-colors"><ChevronLeft className="w-4 h-4"/></button>
-                      <div className="text-xs font-mono text-cyan-500 bg-cyan-950 px-2 py-1 rounded min-w-[44px] text-center">{bjpFeedIndex + 1} / {bjpLiveFeed.length}</div>
-                      <button onClick={() => setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-900/50 transition-colors"><ChevronRight className="w-4 h-4"/></button>
-                    </div>
-                  </div>
-                  <div className="relative flex-grow">
-                    {bjpLiveFeed.map((post, i) => (
-                      <div 
-                        key={post.id} 
-                        onClick={() => window.open(post.url, '_blank')}
-                        className={`absolute inset-0 p-6 flex flex-col justify-center transition-all duration-500 cursor-pointer hover:bg-slate-800/40 rounded-b-3xl ${i === bjpFeedIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}
-                      >
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs">𝕏</div>
-                            <div><div className="font-bold text-sm text-white">{post.author}</div><div className="text-[11px] text-slate-500">@{post.handle}</div></div>
-                          </div>
-                          <span className="text-[10px] text-slate-400 font-mono">{post.time}</span>
-                        </div>
-                        <p className="text-sm text-slate-300 hover:text-white transition-colors">"{post.text}" <ExternalLink className="w-3.5 h-3.5 inline ml-1 text-cyan-400"/></p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* GOVT WINDOW */}
-                <div className="bg-slate-900 rounded-3xl border border-emerald-900/50 shadow-lg overflow-hidden flex flex-col h-[320px]" onMouseEnter={() => setFeedPaused(true)} onMouseLeave={() => setFeedPaused(false)}>
-                  <div className="bg-emerald-950/30 px-5 py-4 border-b border-slate-800 flex justify-between items-center">
-                    <div>
-                      <h3 className="font-black text-emerald-400 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> FACT CHECKED</h3>
-                      <p className="text-[10px] text-slate-400">Tracking {govAccountCount} Govt & Fact Accounts</p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setGovFeedIndex((prev) => (prev - 1 + govLiveFeed.length) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-emerald-900/50 transition-colors"><ChevronLeft className="w-4 h-4"/></button>
-                      <div className="text-xs font-mono text-emerald-500 bg-emerald-950 px-2 py-1 rounded min-w-[44px] text-center">{govFeedIndex + 1} / {govLiveFeed.length}</div>
-                      <button onClick={() => setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-emerald-900/50 transition-colors"><ChevronRight className="w-4 h-4"/></button>
-                    </div>
-                  </div>
-                  <div className="relative flex-grow">
-                    {govLiveFeed.map((post, i) => (
-                      <div 
-                        key={post.id} 
-                        onClick={() => window.open(post.url, '_blank')}
-                        className={`absolute inset-0 p-6 flex flex-col justify-center transition-all duration-500 cursor-pointer hover:bg-slate-800/40 rounded-b-3xl ${i === govFeedIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}
-                      >
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-emerald-900/50 flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-emerald-400" /></div>
-                            <div><div className="font-bold text-sm text-white">{post.author}</div><div className="text-[11px] text-slate-500">@{post.handle}</div></div>
-                          </div>
-                          <span className="text-[10px] text-slate-400 font-mono">{post.time}</span>
-                        </div>
-                        <p className="text-sm text-slate-300 hover:text-white transition-colors">"{post.text}" <ExternalLink className="w-3.5 h-3.5 inline ml-1 text-emerald-400"/></p>
-                        <div className="mt-4"><span className="text-[10px] font-bold px-2 py-1 bg-emerald-950 text-emerald-400 rounded uppercase">{post.status}</span></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -968,7 +831,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* WORDS THAT BUILT DEMOCRACY (RESTORED FOOTER QUOTES) */}
+            {/* WORDS THAT BUILT DEMOCRACY (FOOTER QUOTES) */}
             <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl mt-20 text-center space-y-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
               <h2 className="text-2xl sm:text-3xl font-black text-white flex items-center justify-center gap-3 relative z-10">
@@ -983,11 +846,39 @@ export default function App() {
               </div>
             </div>
 
+            {/* --- STATS PANEL MOVED TO THE BOTTOM AS REQUESTED --- */}
+            <div className="bg-slate-900/90 backdrop-blur rounded-3xl p-8 border border-slate-800 shadow-2xl space-y-6 max-w-xl mx-auto mt-20">
+              <div className="text-center">
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-1.5"><Eye className="w-4 h-4 text-purple-400" /> Verified Total Visits</div>
+                <div className="text-5xl font-black text-white font-mono tracking-tight">
+                  {loadingCounter ? "..." : (totalVisitors !== null ? totalVisitors.toLocaleString() : "12,481")}
+                </div>
+              </div>
+              <div className="h-px w-full bg-slate-800"></div>
+              <div className="text-center">
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center justify-center gap-1.5"><Radio className="w-4 h-4 text-cyan-400" /> Tracked Accounts Monitor</div>
+                <div className="flex justify-around mt-2">
+                  <div>
+                    <div className="text-3xl font-black text-cyan-400 font-mono">{bjpAccountCount}</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase">BJP/NDA</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-emerald-400 font-mono">{govAccountCount}</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase">GOVT/FACT</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-purple-400 font-mono">{incAccountCount}</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase">INC/INDIA</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
 
         {/* ========================================== */}
-        {/* VIEW 2: RESEARCH DATABASE (CSV PARSER)     */}
+        {/* VIEW 2: RESEARCH DATABASE                  */}
         {/* ========================================== */}
         {activeTab === "research" && (
           <div className="space-y-10 animate-in slide-in-from-bottom-4">
@@ -1062,31 +953,13 @@ export default function App() {
                     </div>
                   </div>
                 )}
-                
-                {newsData.length > 0 && (
-                  <div className="space-y-4 mt-8">
-                    <h3 className="text-xl font-bold text-white border-b border-slate-800 pb-2">Corruption & Controversy News Archive</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {newsData.slice(0, 6).map((row, i) => (
-                        <div key={i} className="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                          <div className="flex justify-between text-xs text-slate-500 mb-2">
-                            <span>{row.Date || row.date}</span>
-                            <span className="text-purple-400 font-bold">{row.Source || row.source}</span>
-                          </div>
-                          <h4 className="font-bold text-slate-200 text-sm mb-2">{row.Headline || row.headline}</h4>
-                          <span className="text-[10px] bg-slate-800 px-2 py-1 rounded">{row.Classification || row.classification}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </>
             )}
           </div>
         )}
 
         {/* ========================================== */}
-        {/* VIEW 3: THE DARK ARCHIVE (STANDALONE)      */}
+        {/* VIEW 3: THE DARK ARCHIVE                   */}
         {/* ========================================== */}
         {activeTab === "dark-archive" && (
           <div className="space-y-10 animate-in fade-in duration-500 max-w-6xl mx-auto">
@@ -1206,19 +1079,6 @@ export default function App() {
                     <p className="text-sm text-zinc-300 leading-relaxed bg-zinc-950 p-4 rounded-xl border border-zinc-800">{selectedArchiveItem.detailed_context}</p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 space-y-1">
-                      <div className="text-[10px] font-mono text-zinc-500">PRIMARY SOURCE</div>
-                      <div className="text-xs font-bold text-white">{selectedArchiveItem.primary_source}</div>
-                      <a href={selectedArchiveItem.primary_source_url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-red-400 hover:underline flex items-center gap-1 pt-1">Verify Source <ExternalLink className="w-3 h-3"/></a>
-                    </div>
-                    <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 space-y-1">
-                      <div className="text-[10px] font-mono text-zinc-500">SECONDARY SOURCE</div>
-                      <div className="text-xs font-bold text-white">{selectedArchiveItem.secondary_source}</div>
-                      <a href={selectedArchiveItem.secondary_source_url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-red-400 hover:underline flex items-center gap-1 pt-1">Verify Secondary Archive <ExternalLink className="w-3 h-3"/></a>
-                    </div>
-                  </div>
-
                   <div className="pt-4 flex justify-end">
                     <button onClick={() => setSelectedArchiveItem(null)} className="px-6 py-2.5 rounded-xl bg-zinc-800 text-white font-bold text-xs">Close File</button>
                   </div>
@@ -1228,7 +1088,7 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 4: 10 CHARGES (WITH CHANAKYA QUOTES ROTATION) */}
+        {/* VIEW 4: 10 CHARGES */}
         {activeTab === "pillars" && (
           <div className="space-y-8 animate-in slide-in-from-bottom-4">
             <h2 className="text-3xl font-black text-white text-center">The 10 Structural Charges</h2>
