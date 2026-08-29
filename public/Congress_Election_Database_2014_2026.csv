@@ -1,0 +1,81 @@
+Year,Election Type,Election,State/Level,Assembly/House Seats,INC Seats Won,INC Seats Not Won,Outcome,Government After Election,Primary Electoral Factor
+2014,Lok Sabha,Lok Sabha,National,543,44,499,National defeat,BJP-led NDA formed government,Large BJP national wave; anti-incumbency; leadership and organisation gap
+2014,State/UT Assembly,Andhra Pradesh Assembly,Andhra Pradesh,175,2,173,Major defeat,TDP-led government,Congress collapse after state bifurcation
+2014,State/UT Assembly,Arunachal Pradesh Assembly,Arunachal Pradesh,60,42,18,Won / retained,Congress government,Incumbency and strong regional organisation
+2014,State/UT Assembly,Odisha Assembly,Odisha,147,16,131,Defeat,BJD government,Strong Naveen Patnaik incumbency and regional-party dominance
+2014,State/UT Assembly,Sikkim Assembly,Sikkim,32,0,32,Defeat,SDF government,Regional-party dominance
+2014,State/UT Assembly,Telangana Assembly,Telangana,119,21,98,Defeat,TRS government,New-state sentiment and TRS dominance
+2014,State/UT Assembly,Haryana Assembly,Haryana,90,15,75,Defeat,BJP government,Anti-incumbency and BJP expansion
+2014,State/UT Assembly,Maharashtra Assembly,Maharashtra,288,42,246,Defeat,BJP-led government,Anti-incumbency and BJP-Shiv Sena strength
+2014,State/UT Assembly,Jharkhand Assembly,Jharkhand,81,6,75,Defeat,BJP-led government,BJP alliance advantage
+2014,State/UT Assembly,Jammu & Kashmir Assembly,Jammu & Kashmir,87,12,75,Defeat,PDP-BJP coalition,Regional polarisation and PDP/BJP competition
+2015,State/UT Assembly,Delhi Assembly,Delhi,70,8,62,Major defeat,AAP government,AAP surge and collapse of Congress vote base
+2015,State/UT Assembly,Bihar Assembly,Bihar,243,27,216,Alliance victory,Mahagathbandhan government,Grand Alliance successfully consolidated anti-BJP vote
+2016,State/UT Assembly,Assam Assembly,Assam,126,26,100,Defeat,BJP-led government,Anti-incumbency and BJP-led alliance expansion
+2016,State/UT Assembly,Kerala Assembly,Kerala,140,22,118,Defeat,LDF government,UDF anti-incumbency / normal alternation
+2016,State/UT Assembly,Puducherry Assembly,Puducherry,30,15,15,Won,Congress-led government,Local leadership and alliance advantage
+2016,State/UT Assembly,Tamil Nadu Assembly,Tamil Nadu,234,8,226,Defeat,AIADMK government,DMK-Congress alliance lost; AIADMK incumbency
+2016,State/UT Assembly,West Bengal Assembly,West Bengal,294,44,250,Defeat,TMC government,TMC dominance; Congress vote concentrated in limited regions
+2017,State/UT Assembly,Goa Assembly,Goa,40,17,23,Defeat / largest party but no government,BJP-led government,Post-poll alliance arithmetic
+2017,State/UT Assembly,Manipur Assembly,Manipur,60,28,32,Defeat,BJP-led coalition,BJP expansion and post-poll alliance
+2017,State/UT Assembly,Punjab Assembly,Punjab,117,77,40,Won,Congress government,Strong anti-incumbency against SAD-BJP and AAP vote split
+2017,State/UT Assembly,Uttar Pradesh Assembly,Uttar Pradesh,403,7,396,Major defeat,BJP government,BJP wave; weak organisation; alliance underperformance
+2017,State/UT Assembly,Uttarakhand Assembly,Uttarakhand,70,11,59,Defeat,BJP government,Strong anti-incumbency
+2017,State/UT Assembly,Himachal Pradesh Assembly,Himachal Pradesh,68,21,47,Defeat,BJP government,Incumbency fatigue and leadership issues
+2017,State/UT Assembly,Gujarat Assembly,Gujarat,182,77,105,Defeat,BJP government,BJP organisational strength; Congress improved but fell short
+2018,State/UT Assembly,Tripura Assembly,Tripura,60,0,60,Major defeat,BJP-IPFT government,BJP breakthrough; Left government displaced
+2018,State/UT Assembly,Meghalaya Assembly,Meghalaya,60,21,39,Defeat,NPP-led government,Fragmented verdict and post-poll coalition
+2018,State/UT Assembly,Nagaland Assembly,Nagaland,60,0,60,Defeat,NDPP-BJP government,Regional-party/BJP alliance dominance
+2018,State/UT Assembly,Karnataka Assembly,Karnataka,224,80,144,Defeat / largest party not Congress,Congress-JDS coalition initially,BJP emerged largest; Congress formed post-poll coalition with JD(S)
+2018,State/UT Assembly,Mizoram Assembly,Mizoram,40,5,35,Major defeat,MNF government,Strong anti-incumbency
+2018,State/UT Assembly,Chhattisgarh Assembly,Chhattisgarh,90,68,22,Won,Congress government,Strong anti-incumbency against BJP
+2018,State/UT Assembly,Madhya Pradesh Assembly,Madhya Pradesh,230,114,116,Won,Congress government,Anti-incumbency against BJP; close statewide contest
+2018,State/UT Assembly,Rajasthan Assembly,Rajasthan,200,99,101,Won,Congress government,Anti-incumbency against BJP
+2018,State/UT Assembly,Telangana Assembly,Telangana,119,19,100,Defeat,TRS government,TRS incumbency and weak Congress alliance strategy
+2019,Lok Sabha,Lok Sabha,National,543,52,491,National defeat,BJP-led NDA government,BJP national dominance; Congress limited recovery
+2019,State/UT Assembly,Andhra Pradesh Assembly,Andhra Pradesh,175,0,175,Major defeat,YSRCP government,YSRCP dominance; Congress remained marginal
+2019,State/UT Assembly,Arunachal Pradesh Assembly,Arunachal Pradesh,60,4,56,Defeat,BJP government,BJP consolidation
+2019,State/UT Assembly,Odisha Assembly,Odisha,147,9,138,Defeat,BJD government,BJD dominance
+2019,State/UT Assembly,Sikkim Assembly,Sikkim,32,0,32,Defeat,SKM government,Regional-party dominance
+2019,State/UT Assembly,Haryana Assembly,Haryana,90,31,59,Defeat,BJP-JJP government,BJP remained largest; fragmented opposition
+2019,State/UT Assembly,Maharashtra Assembly,Maharashtra,288,44,244,Defeat / alliance government later,MVA government later formed,BJP-Shiv Sena split after election; Congress benefited through alliance
+2019,State/UT Assembly,Jharkhand Assembly,Jharkhand,81,16,65,Alliance victory,JMM-led government,Anti-incumbency against BJP and successful opposition alliance
+2020,State/UT Assembly,Delhi Assembly,Delhi,70,0,70,Major defeat,AAP government,AAP dominance and continued Congress vote-base erosion
+2020,State/UT Assembly,Bihar Assembly,Bihar,243,19,224,Defeat,NDA government,NDA retained power; Congress underperformed within alliance
+2021,State/UT Assembly,Assam Assembly,Assam,126,29,97,Defeat,BJP-led government,BJP-led alliance retained power
+2021,State/UT Assembly,Kerala Assembly,Kerala,140,21,119,Defeat,LDF government,LDF broke the usual alternation pattern
+2021,State/UT Assembly,Tamil Nadu Assembly,Tamil Nadu,234,18,216,Alliance victory,DMK-led government,DMK-led alliance defeated AIADMK
+2021,State/UT Assembly,West Bengal Assembly,West Bengal,294,0,294,Major defeat,TMC government,Congress vote collapse; TMC-BJP bipolar contest
+2021,State/UT Assembly,Puducherry Assembly,Puducherry,30,2,28,Defeat,NDA government,NDA victory and fragmented opposition
+2022,State/UT Assembly,Goa Assembly,Goa,40,11,29,Defeat,BJP government,BJP retained power
+2022,State/UT Assembly,Manipur Assembly,Manipur,60,5,55,Major defeat,BJP government,BJP consolidation; Congress collapse
+2022,State/UT Assembly,Punjab Assembly,Punjab,117,18,99,Major defeat,AAP government,AAP landslide and Congress leadership crisis
+2022,State/UT Assembly,Uttar Pradesh Assembly,Uttar Pradesh,403,2,401,Major defeat,BJP government,Congress vote collapse and bipolar BJP-SP contest
+2022,State/UT Assembly,Uttarakhand Assembly,Uttarakhand,70,19,51,Defeat,BJP government,BJP overcame anti-incumbency
+2022,State/UT Assembly,Himachal Pradesh Assembly,Himachal Pradesh,68,40,28,Won,Congress government,BJP anti-incumbency and local issues
+2022,State/UT Assembly,Gujarat Assembly,Gujarat,182,17,165,Major defeat,BJP government,BJP landslide; AAP entered opposition space
+2023,State/UT Assembly,Tripura Assembly,Tripura,60,3,57,Defeat,BJP-led government,BJP retained power; Congress-Left alliance improved but fell short
+2023,State/UT Assembly,Meghalaya Assembly,Meghalaya,60,5,55,Defeat,NPP-led government,NPP remained dominant
+2023,State/UT Assembly,Nagaland Assembly,Nagaland,60,0,60,Defeat,NDPP-BJP government,Regional/BJP dominance
+2023,State/UT Assembly,Karnataka Assembly,Karnataka,224,135,89,Won,Congress government,Strong anti-incumbency against BJP; welfare campaign
+2023,State/UT Assembly,Chhattisgarh Assembly,Chhattisgarh,90,35,55,Defeat,BJP government,BJP comeback; close contest
+2023,State/UT Assembly,Madhya Pradesh Assembly,Madhya Pradesh,230,66,164,Major defeat,BJP government,BJP welfare/organisation advantage; Congress vote did not translate into seats
+2023,State/UT Assembly,Rajasthan Assembly,Rajasthan,199,70,129,Defeat,BJP government,Anti-incumbency and BJP comeback
+2023,State/UT Assembly,Telangana Assembly,Telangana,119,64,55,Won,Congress government,Anti-incumbency against BRS
+2023,State/UT Assembly,Mizoram Assembly,Mizoram,40,1,39,Major defeat,ZPM government,ZPM displaced MNF; Congress remained marginal
+2024,Lok Sabha,Lok Sabha,National,543,99,444,National defeat but major recovery,BJP-led NDA government,Congress nearly doubled seats; opposition alliance improved performance
+2024,State/UT Assembly,Andhra Pradesh Assembly,Andhra Pradesh,175,0,175,Major defeat,TDP-led NDA government,YSRCP collapse and TDP-Jana Sena-BJP alliance
+2024,State/UT Assembly,Arunachal Pradesh Assembly,Arunachal Pradesh,60,19,41,Defeat,BJP government,BJP retained strong majority
+2024,State/UT Assembly,Odisha Assembly,Odisha,147,14,133,Major defeat,BJP government,Historic BJP breakthrough against BJD
+2024,State/UT Assembly,Sikkim Assembly,Sikkim,32,0,32,Defeat,SKM government,SKM dominance
+2024,State/UT Assembly,Haryana Assembly,Haryana,90,37,53,Defeat,BJP government,BJP retained power; Congress improved but fell short
+2024,State/UT Assembly,Maharashtra Assembly,Maharashtra,288,16,272,Major defeat,Mahayuti government,Mahayuti landslide; alliance/campaign and welfare dynamics
+2024,State/UT Assembly,Jharkhand Assembly,Jharkhand,81,16,65,Alliance victory,JMM-led government,JMM-led alliance retained power
+2024,State/UT Assembly,Jammu & Kashmir Assembly,Jammu & Kashmir,90,6,84,Defeat,NC-Congress government,NC dominated alliance; Congress remained smaller partner
+2025,State/UT Assembly,Delhi Assembly,Delhi,70,0,70,Major defeat,BJP government,Congress remained third force; AAP-BJP contest dominated
+2025,State/UT Assembly,Bihar Assembly,Bihar,243,6,237,Major defeat,NDA government,NDA landslide; Congress underperformed within Mahagathbandhan
+2026,State/UT Assembly,Assam Assembly,Assam,126,19,107,Defeat,BJP-led government,BJP-led alliance retained power; Congress remained main opposition bloc
+2026,State/UT Assembly,Kerala Assembly,Kerala,140,63,77,Won in alliance,Congress-led UDF government,UDF returned to power; Kerala's historic alternation resumed
+2026,State/UT Assembly,Tamil Nadu Assembly,Tamil Nadu,234,5,229,Major defeat,TVK-led government,TVK breakthrough and fragmentation of traditional two-party blocs
+2026,State/UT Assembly,West Bengal Assembly,West Bengal,293,2,291,Major defeat,BJP government,BJP displaced TMC; Congress remained marginal
+2026,State/UT Assembly,Puducherry Assembly,Puducherry,30,1,29,Major defeat,NDA government,NDA retained control; Congress won one seat
