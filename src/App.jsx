@@ -24,9 +24,9 @@ export default function App() {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   // Live Dynamic Data Counts
-  const [bjpAccountCount, setBjpAccountCount] = useState(32);
-  const [govAccountCount, setGovAccountCount] = useState(45);
-  const [incAccountCount, setIncAccountCount] = useState(20);
+  const [bjpAccountCount, setBjpAccountCount] = useState(29);
+  const [govAccountCount, setGovAccountCount] = useState(27);
+  const [incAccountCount, setIncAccountCount] = useState(12);
 
   // Geo-Location & Language State
   const [currentLang, setCurrentLang] = useState("en");
@@ -146,10 +146,10 @@ export default function App() {
           const data = await res.json();
           setTotalVisitors(data.count);
         } else {
-          setTotalVisitors(12481);
+          setTotalVisitors(3142);
         }
       } catch (err) {
-        setTotalVisitors(12481);
+        setTotalVisitors(3142);
       } finally {
         setLoadingCounter(false);
       }
