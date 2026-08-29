@@ -49,7 +49,6 @@ export default function App() {
   const [csvLoading, setCsvLoading] = useState(false);
   const [csvError, setCsvError] = useState(false);
 
-  // --- ANONYMOUS COMMENTS STATE ---
   const [comments, setComments] = useState([
     { id: 1, name: "Anonymous Patriot", text: "Finally an archive that shows the actual data behind the headlines!", time: "10 mins ago" },
     { id: 2, name: "DeshBhakt_99", text: "The contradiction files are absolute gold. Keep receipts coming.", time: "1 hour ago" }
@@ -71,7 +70,6 @@ export default function App() {
     setNewCommentText("");
   };
 
-  // --- "DID YOU KNOW" TRUTH REVEAL WIDGET STATE ---
   const darkSecretsBank = [
     { title: "The 1975 Emergency Press Shutdown", detail: "During the 21-month Emergency, power supply to newspaper offices in Delhi was deliberately cut off overnight to prevent publication of dissent." },
     { title: "Kissa Kursi Ka Masterprint Burning", detail: "Supreme Court and judicial inquiry records confirmed that master reels of political satire film 'Kissa Kursi Ka' were seized and burned during the 1970s." },
@@ -84,7 +82,6 @@ export default function App() {
     setSecretIndex((prev) => (prev + 1) % darkSecretsBank.length);
   };
 
-  // Geo-Location IP Detection & Auto Language Mapping
   useEffect(() => {
     async function detectUserLocationAndLang() {
       try {
@@ -129,14 +126,12 @@ export default function App() {
     }
   };
 
-  // Secret Admin URL Trigger (?editor=true)
   useEffect(() => {
     if (window.location.search.includes('editor=true')) {
       setShowAdminTab(true);
     }
   }, []);
 
-  // Real Visitor Counter API
   useEffect(() => {
     async function trackVisit() {
       try {
@@ -202,7 +197,6 @@ export default function App() {
     return result;
   };
 
-  // --- 50 QUESTION DEMOCRACY QUIZ POOL ---
   const fullQuizPool = [
     { q: "In what year was the landmark 33% Women's Reservation Bill finally passed by Parliament?", opts: ["1996", "2010", "2014", "2023"], ans: 3, exp: "Despite being introduced multiple times since 1996, the Nari Shakti Vandan Adhiniyam was finally passed in 2023." },
     { q: "Which major scandal led to the cancellation of 122 telecom licenses by the Supreme Court in 2012?", opts: ["Bofors Scandal", "2G Spectrum Scam", "Coalgate", "CWG Scam"], ans: 1, exp: "The Supreme Court cancelled 122 licenses allocated during UPA-1, citing an unconstitutional first-come-first-served process." },
@@ -250,7 +244,6 @@ export default function App() {
     }
   };
 
-  // --- 120+ EXPANDED INC LIVE MONITOR ROTATING BANK (5-10 Minutes) ---
   const [incLiveMonitorIndex, setIncLiveMonitorIndex] = useState(0);
   const [incMonitorPaused, setIncMonitorPaused] = useState(false);
 
@@ -267,7 +260,6 @@ export default function App() {
     { id: 10, author: "Srinivas BV", handle: "srinivasiyc", text: "Youth unemployment in our governed states is zero due to proactive policies.", status: "EXAGGERATED", evidence: "Periodic Labour Force Survey (PLFS) data indicates state-level unemployment fluctuates irrespective of governance." }
   ], []);
 
-  // 5-10 Minute Rotation (420,000ms = 7 mins)
   useEffect(() => {
     if (incMonitorPaused || activeTab !== "overview") return;
     const interval = setInterval(() => {
@@ -276,7 +268,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, [incMonitorPaused, activeTab, incLiveMonitorBank.length]);
 
-  // --- 10 TWITTER FEEDS WITH 5S ROTATION & ARROWS ---
   const [bjpFeedIndex, setBjpFeedIndex] = useState(0);
   const [govFeedIndex, setGovFeedIndex] = useState(0);
   const [feedPaused, setFeedPaused] = useState(false);
@@ -307,7 +298,6 @@ export default function App() {
     { id: 10, author: "UIDAI", handle: "UIDAI", text: "Remember, UIDAI never asks you to share your Aadhaar OTP on phone calls. Stay alert.", time: "5 hrs ago", status: "CITIZEN ADVISORY", url: "https://twitter.com/UIDAI" }
   ], []);
 
-  // 5-Second Rotation Timer for Widgets
   useEffect(() => {
     if (feedPaused || activeTab !== "overview") return;
     const interval = setInterval(() => {
@@ -317,7 +307,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, [feedPaused, activeTab, bjpLiveFeed.length, govLiveFeed.length]);
 
-  // --- DEMOCRACY QUOTES ROTATION ---
   const [quoteIndex, setQuoteIndex] = useState(0);
   const democracyQuotes = useMemo(() => [
     { text: "Constitution is not a mere lawyers' document, it is a vehicle of Life, and its spirit is always the spirit of Age.", author: "B.R. Ambedkar" },
@@ -335,7 +324,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTab, democracyQuotes.length]);
 
-  // --- CHANAKYA QUOTES FOR CHARGES PAGE ---
   const [chanakyaIndex, setChanakyaIndex] = useState(0);
   const chanakyaQuotes = useMemo(() => [
     { text: "A person should not be too honest. Straight trees are cut first and honest people are screwed first.", source: "Chanakya Neeti" },
@@ -351,7 +339,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, [chanakyaQuotes.length]);
 
-  // --- THE DARK ARCHIVE DATA ---
   const [archiveFilter, setArchiveFilter] = useState("ALL");
   const [archiveSearch, setArchiveSearch] = useState("");
   const [selectedArchiveItem, setSelectedArchiveItem] = useState(null);
@@ -381,6 +368,14 @@ export default function App() {
       badge: "COURT RECORD"
     }
   ], []);
+
+  const filteredArchiveItems = useMemo(() => {
+    return darkArchiveItems.filter((item) => {
+      const matchesSearch = item.title.toLowerCase().includes(archiveSearch.toLowerCase()) || item.summary.toLowerCase().includes(archiveSearch.toLowerCase());
+      const matchesFilter = archiveFilter === "ALL" || item.category === archiveFilter;
+      return matchesSearch && matchesFilter;
+    });
+  }, [archiveSearch, archiveFilter, darkArchiveItems]);
 
   const pillars = useMemo(() => [
     { id: 1, title: "Youth: Past Action vs Today's Preach", icon: Users, summary: "Decades of sluggish educational reforms, legacy of paper leaks, and employment stagnation juxtaposed with current tall promises.", points: [{ heading: "The 60-Year Jobless Paradigm", detail: "While currently demanding 30 lakh government jobs with a magic wand, the 2004-2014 era witnessed an average formal employment growth of under 1.5%." }, { heading: "Paper Leaks & State Freezes", detail: "Recruitment freezes and state-level teacher examination scams in Congress-governed states affected 26+ lakh young aspirants." }] },
@@ -447,23 +442,24 @@ export default function App() {
               </div>
               <div className="flex flex-col">
                 <span className="text-lg md:text-2xl font-black tracking-tight text-white whitespace-nowrap">
-                  INDIAN NATIONAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">DHONGRESS</span>
+                  {/* Fixed black on black issue by explicitly defining text-purple-500 instead of relying on bg-clip */}
+                  INDIAN NATIONAL <span className="text-purple-500">DHONGRESS</span>
                 </span>
                 <p className="text-[11px] text-slate-400 font-mono whitespace-nowrap">Archive of Contradictions & Dynastic Politics</p>
               </div>
             </div>
 
-            {/* Desktop Nav */}
-            <nav className="hidden xl:flex items-center gap-1 lg:gap-2">
-              <button onClick={() => setActiveTab("overview")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "overview" ? "bg-purple-500/20 text-purple-300 border border-purple-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>Overview</button>
-              <button onClick={() => setActiveTab("research")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === "research" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}><Database className="w-4 h-4"/> Research Database</button>
-              <button onClick={() => setActiveTab("pillars")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "pillars" ? "bg-purple-500/20 text-purple-300 border border-purple-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>10 Charges</button>
-              <button onClick={() => setActiveTab("scams")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "scams" ? "bg-purple-500/20 text-purple-300 border border-purple-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>Scam Vault</button>
-              <button onClick={() => setActiveTab("dark-archive")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === "dark-archive" ? "bg-red-500/20 text-red-300 border border-red-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}><FolderLock className="w-4 h-4 text-red-400"/> Dark Archive</button>
-              <button onClick={() => setActiveTab("meltdown")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "meltdown" ? "bg-purple-500/20 text-purple-300 border border-purple-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>Meltdown</button>
+            {/* Desktop Nav - Added bg-slate-800 for solid navigation buttons per request */}
+            <nav className="hidden xl:flex items-center gap-1.5 lg:gap-2">
+              <button onClick={() => setActiveTab("overview")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md ${activeTab === "overview" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"}`}>Overview</button>
+              <button onClick={() => setActiveTab("research")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md flex items-center gap-1.5 ${activeTab === "research" ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"}`}><Database className="w-4 h-4"/> Research Database</button>
+              <button onClick={() => setActiveTab("pillars")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md ${activeTab === "pillars" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"}`}>10 Charges</button>
+              <button onClick={() => setActiveTab("scams")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md ${activeTab === "scams" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"}`}>Scam Vault</button>
+              <button onClick={() => setActiveTab("dark-archive")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md flex items-center gap-1.5 ${activeTab === "dark-archive" ? "bg-red-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"}`}><FolderLock className="w-4 h-4"/> Dark Archive</button>
+              <button onClick={() => setActiveTab("meltdown")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md ${activeTab === "meltdown" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"}`}>Meltdown</button>
               
               {showAdminTab && (
-                <button onClick={() => setActiveTab("admin")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === "admin" ? "bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40" : "text-fuchsia-400 hover:text-fuchsia-300 hover:bg-fuchsia-900/30"}`}>
+                <button onClick={() => setActiveTab("admin")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md flex items-center gap-1.5 ${activeTab === "admin" ? "bg-fuchsia-600 text-white" : "bg-slate-800 text-fuchsia-400 hover:text-fuchsia-300 hover:bg-slate-700"}`}>
                   <Lock className="w-3.5 h-3.5" /> Editorial Desk
                 </button>
               )}
@@ -474,22 +470,23 @@ export default function App() {
             </nav>
 
             <div className="xl:hidden flex items-center">
-              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-lg bg-slate-800 text-slate-300">
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-lg bg-slate-800 text-slate-300 shadow-md">
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
         </div>
 
+        {/* Mobile Nav - Added consistent solid backgrounds to match desktop */}
         {mobileMenuOpen && (
-          <div className="xl:hidden border-b border-slate-800 bg-[#0f172a] px-4 pt-2 pb-6 space-y-2">
-            <button onClick={() => { setActiveTab("overview"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200">Overview</button>
-            <button onClick={() => { setActiveTab("research"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-cyan-300 flex items-center gap-2"><Database className="w-4 h-4"/> Research Database</button>
-            <button onClick={() => { setActiveTab("pillars"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200">10 Thematic Charges</button>
-            <button onClick={() => { setActiveTab("scams"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200">Mega Scam Vault</button>
-            <button onClick={() => { setActiveTab("dark-archive"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-red-400 flex items-center gap-2"><FolderLock className="w-4 h-4"/> Dark Archive</button>
-            <button onClick={() => { setActiveTab("meltdown"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200">Electoral Meltdown</button>
-            <button onClick={() => { setActiveTab("donate"); setMobileMenuOpen(false); }} className="w-full mt-2 py-2.5 rounded-lg font-bold bg-emerald-500 text-white flex justify-center gap-2">Donate to Army</button>
+          <div className="xl:hidden border-b border-slate-800 bg-[#0f172a] px-4 pt-4 pb-6 space-y-3">
+            <button onClick={() => { setActiveTab("overview"); setMobileMenuOpen(false); }} className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium shadow-sm ${activeTab === "overview" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-200"}`}>Overview</button>
+            <button onClick={() => { setActiveTab("research"); setMobileMenuOpen(false); }} className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium flex items-center gap-2 shadow-sm ${activeTab === "research" ? "bg-cyan-600 text-white" : "bg-slate-800 text-cyan-300"}`}><Database className="w-4 h-4"/> Research Database</button>
+            <button onClick={() => { setActiveTab("pillars"); setMobileMenuOpen(false); }} className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium shadow-sm ${activeTab === "pillars" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-200"}`}>10 Thematic Charges</button>
+            <button onClick={() => { setActiveTab("scams"); setMobileMenuOpen(false); }} className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium shadow-sm ${activeTab === "scams" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-200"}`}>Mega Scam Vault</button>
+            <button onClick={() => { setActiveTab("dark-archive"); setMobileMenuOpen(false); }} className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium flex items-center gap-2 shadow-sm ${activeTab === "dark-archive" ? "bg-red-600 text-white" : "bg-slate-800 text-red-400"}`}><FolderLock className="w-4 h-4"/> Dark Archive</button>
+            <button onClick={() => { setActiveTab("meltdown"); setMobileMenuOpen(false); }} className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium shadow-sm ${activeTab === "meltdown" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-200"}`}>Electoral Meltdown</button>
+            <button onClick={() => { setActiveTab("donate"); setMobileMenuOpen(false); }} className="w-full mt-2 py-3 rounded-lg font-bold bg-emerald-500 text-white flex justify-center gap-2 shadow-md">Donate to Army</button>
           </div>
         )}
       </header>
@@ -497,16 +494,15 @@ export default function App() {
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-16">
         
-        {/* ========================================== */}
-        {/* VIEW 1: FRONT PAGE (OVERVIEW)              */}
-        {/* ========================================== */}
+        {}
         {activeTab === "overview" && (
           <div className="space-y-16 animate-in fade-in duration-500">
             
             {/* HERO SECTION */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
               <div className="lg:col-span-3 space-y-6 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold tracking-wider uppercase shadow-inner">
+                {/* Strengthened badge background to fix contrast issues */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900 border border-purple-500/50 text-purple-300 text-xs font-bold tracking-wider uppercase shadow-inner">
                   <Flame className="w-4 h-4 text-purple-400 animate-pulse" />
                   SATIRICAL ARCHIVE & POLITICAL LORE
                 </div>
@@ -564,7 +560,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* INC TWITTER WATCH & CONTRADICTIONS */}
+            {}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-800 pt-10">
               
               {/* Left Column: Rotating INC Live Monitor */}
@@ -622,7 +618,7 @@ export default function App() {
 
             </div>
 
-            {/* --- PLACED AFTER INC LIVE MONITOR & CONTRADICTIONS: BJP & GOV FEEDS --- */}
+            {}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-800 pt-10" onMouseEnter={() => setFeedPaused(true)} onMouseLeave={() => setFeedPaused(false)}>
               
               {/* BJP/NDA Live Feed */}
@@ -685,7 +681,7 @@ export default function App() {
 
             </div>
 
-            {/* --- ANONYMOUS COMMUNITY COMMENTS SECTION --- */}
+            {}
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl mt-12">
               <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
                 <MessageSquare className="w-6 h-6 text-cyan-400" />
@@ -732,7 +728,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* DEMOCRACY QUIZ */}
+            {}
             <div className="bg-slate-900 rounded-3xl p-1 shadow-2xl relative overflow-hidden mt-16">
               <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
               <div className="bg-[#0f172a] rounded-[22px] p-6 sm:p-10 border border-slate-800 relative z-10">
@@ -806,6 +802,7 @@ export default function App() {
               </div>
             </div>
 
+            {}
             {/* WORDS THAT BUILT DEMOCRACY (FOOTER QUOTES) */}
             <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl mt-20 text-center space-y-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -852,6 +849,7 @@ export default function App() {
           </div>
         )}
 
+        {}
         {/* ========================================== */}
         {/* VIEW 2: RESEARCH DATABASE                  */}
         {/* ========================================== */}
@@ -933,6 +931,7 @@ export default function App() {
           </div>
         )}
 
+        {}
         {/* ========================================== */}
         {/* VIEW 3: THE DARK ARCHIVE                   */}
         {/* ========================================== */}
@@ -1063,6 +1062,7 @@ export default function App() {
           </div>
         )}
 
+        {}
         {/* VIEW 4: 10 CHARGES */}
         {activeTab === "pillars" && (
           <div className="space-y-8 animate-in slide-in-from-bottom-4">
