@@ -3,7 +3,8 @@ import {
   AlertTriangle, Flame, Users, Shield, Briefcase, Globe, Factory, Database,
   HeartHandshake, Crown, TrendingDown, Search, ExternalLink, Share2, Heart,
   ChevronRight, Sparkles, Info, CheckCircle2, Copy, Menu, X, Award, Eye, Flag,
-  Loader2, Lock, Check, Ban, Radio, Library, FileText, History
+  Loader2, Lock, Check, Ban, Radio, Library, FileText, History, BarChart, 
+  PieChart, LayoutGrid, List, Calendar, AlertCircle
 } from "lucide-react";
 
 export default function App() {
@@ -39,58 +40,165 @@ export default function App() {
   const DOMAIN_NAME = "indiannationaldhongress.com";
   const BHARAT_KE_VEER_URL = "https://bharatkeveer.gov.in/donorLogin";
 
-  // Secret Admin URL Trigger
+  // Research Database State
+  const [electionData, setElectionData] = useState([]);
+  const [newsData, setNewsData] = useState([]);
+  const [csvError, setCsvError] = useState(null);
+  const [isCsvLoading, setIsCsvLoading] = useState(false);
+  
+  // Research Filters
+  const [elecFilterYear, setElecFilterYear] = useState("All");
+  const [elecFilterType, setElecFilterType] = useState("All");
+  const [elecFilterOutcome, setElecFilterOutcome] = useState("All");
+  const [newsSearch, setNewsSearch] = useState("");
+  const [newsFilterYear, setNewsFilterYear] = useState("All");
+  const [newsFilterCase, setNewsFilterCase] = useState("All");
+  const [newsFilterClass, setNewsFilterClass] = useState("All");
+  const [newsViewMode, setNewsViewMode] = useState("cards"); // 'cards' | 'table'
+  const [selectedDeepDiveCase, setSelectedDeepDiveCase] = useState("");
+
+  // Custom robust CSV Parser
+  const parseCSV = (str) => {
+    if (!str) return [];
+    const arr = [];
+    let quote = false;
+    let row = [], col = '';
+    for (let c = 0; c < str.length; c++) {
+      let cc = str[c], nc = str[c + 1];
+      if (cc === '"' && quote && nc === '"') { col += cc; ++c; continue; }
+      if (cc === '"') { quote = !quote; continue; }
+      if (cc === ',' && !quote) { row.push(col.trim()); col = ''; continue; }
+      if (cc === '\r' && nc === '\n' && !quote) { row.push(col.trim()); arr.push(row); col = ''; row = []; ++c; continue; }
+      if (cc === '\n' && !quote) { row.push(col.trim()); arr.push(row); col = ''; row = []; continue; }
+      if (cc === '\r' && !quote) { row.push(col.trim()); arr.push(row); col = ''; row = []; continue; }
+      col += cc;
+    }
+    if (col || row.length) { row.push(col.trim()); arr.push(row); }
+    if (arr.length < 2) return [];
+    const headers = arr[0].map(h => h.trim().replace(/^"|"$/g, ''));
+    return arr.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => { 
+        let val = row[i] ? row[i].trim() : '';
+        if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1);
+        obj[h] = val; 
+      });
+      return obj;
+    });
+  };
+
+  useEffect(() => {
+    async function loadResearchData() {
+      setIsCsvLoading(true);
+      try {
+        const [resElec, resNews] = await Promise.all([
+          fetch('/Congress_Election_Database_2014_2026.csv').catch(() => null),
+          fetch('/Congress_Corruption_Controversy_News_2014_2026.csv').catch(() => null)
+        ]);
+
+        let parsedE = [];
+        let parsedN = [];
+
+        if (resElec && resElec.ok) {
+          const text = await resElec.text();
+          parsedE = parseCSV(text);
+        } else {
+          // Provide silent empty array to prevent crash if file is missing, relying on UI error state
+          parsedE = [];
+        }
+
+        if (resNews && resNews.ok) {
+          const text = await resNews.text();
+          parsedN = parseCSV(text);
+        } else {
+          parsedN = [];
+        }
+
+        if (parsedE.length === 0 && parsedN.length === 0) {
+          throw new Error("CSV files not found or empty.");
+        }
+
+        setElectionData(parsedE.filter(d => Object.keys(d).length > 2 && d['Year']));
+        setNewsData(parsedN.filter(d => Object.keys(d).length > 2 && d['Headline']));
+        setCsvError(null);
+      } catch (err) {
+        setCsvError("Research dataset could not be loaded. Existing website sections remain available.");
+      } finally {
+        setIsCsvLoading(false);
+      }
+    }
+    // Only load when research tab is active to save bandwidth, or load on mount if preferred. 
+    // Loading on mount ensures fast switching.
+    loadResearchData();
+  }, []);
+
+  const elecStats = useMemo(() => {
+    const total = electionData.length;
+    const ls = electionData.filter(d => d['Election Type']?.toLowerCase().includes('lok sabha')).length;
+    const state = electionData.filter(d => d['Election Type']?.toLowerCase().includes('assembly')).length;
+    const wins = electionData.filter(d => d['Outcome']?.toLowerCase().includes('won') || d['Outcome']?.toLowerCase().includes('victory')).length;
+    const defeats = electionData.filter(d => d['Outcome']?.toLowerCase().includes('defeat') || d['Outcome']?.toLowerCase().includes('lost')).length;
+    const zeroSeats = electionData.filter(d => parseInt(d['INC Seats Won']) === 0).length;
+    return { total, ls, state, wins, defeats, zeroSeats };
+  }, [electionData]);
+
+  const newsStats = useMemo(() => {
+    const total = newsData.length;
+    const uniqueCases = new Set(newsData.map(d => d['Case / Controversy'])).size;
+    return { total, uniqueCases };
+  }, [newsData]);
+
+  const filteredElections = useMemo(() => {
+    return electionData.filter(d => {
+      const matchY = elecFilterYear === "All" || d['Year'] === elecFilterYear;
+      const matchT = elecFilterType === "All" || (d['Election Type'] && d['Election Type'].includes(elecFilterType));
+      const matchO = elecFilterOutcome === "All" || (d['Outcome'] && d['Outcome'].includes(elecFilterOutcome));
+      return matchY && matchT && matchO;
+    });
+  }, [electionData, elecFilterYear, elecFilterType, elecFilterOutcome]);
+
+  const filteredNews = useMemo(() => {
+    return newsData.filter(d => {
+      const s = newsSearch.toLowerCase();
+      const matchSearch = !s || 
+        (d['Headline']?.toLowerCase().includes(s)) || 
+        (d['Case / Controversy']?.toLowerCase().includes(s)) ||
+        (d['People / Organisations']?.toLowerCase().includes(s));
+      const matchY = newsFilterYear === "All" || d['Year'] === newsFilterYear;
+      const matchC = newsFilterCase === "All" || d['Case / Controversy'] === newsFilterCase;
+      const matchClass = newsFilterClass === "All" || d['Evidence Classification'] === newsFilterClass;
+      return matchSearch && matchY && matchC && matchClass;
+    });
+  }, [newsData, newsSearch, newsFilterYear, newsFilterCase, newsFilterClass]);
+
+  const caseDeepDiveData = useMemo(() => {
+    if (!selectedDeepDiveCase || selectedDeepDiveCase === "All") return null;
+    const caseItems = newsData.filter(d => d['Case / Controversy'] === selectedDeepDiveCase);
+    if (!caseItems.length) return null;
+    
+    // Sort chronologically
+    const sorted = [...caseItems].sort((a, b) => new Date(a['Date']) - new Date(b['Date']));
+    
+    return {
+      count: caseItems.length,
+      earliest: sorted[0]['Date'],
+      latest: sorted[sorted.length - 1]['Date'],
+      people: [...new Set(caseItems.map(c => c['People / Organisations']).filter(Boolean))].join(", "),
+      articles: sorted
+    };
+  }, [newsData, selectedDeepDiveCase]);
+
+  // Extract unique filter options
+  const elecYears = useMemo(() => ["All", ...new Set(electionData.map(d => d['Year']).filter(Boolean))].sort(), [electionData]);
+  const elecTypes = useMemo(() => ["All", "Lok Sabha", "Assembly"], []);
+  const newsYears = useMemo(() => ["All", ...new Set(newsData.map(d => d['Year']).filter(Boolean))].sort(), [newsData]);
+  const newsCases = useMemo(() => ["All", ...new Set(newsData.map(d => d['Case / Controversy']).filter(Boolean))].sort(), [newsData]);
+  const newsClassifications = useMemo(() => ["All", ...new Set(newsData.map(d => d['Evidence Classification']).filter(Boolean))], [newsData]);
+
   useEffect(() => {
     if (window.location.search.includes('editor=true')) {
       setShowAdminTab(true);
     }
-  }, []);
-
-  // Fetch Real Site Hits
-  useEffect(() => {
-    async function trackVisit() {
-      try {
-        setLoadingCounter(true);
-        const res = await fetch(`https://api.counterapi.dev/v1/indiannationaldhongress/visits/up`);
-        if (res.ok) {
-          const data = await res.json();
-          setTotalVisitors(data.count);
-        } else {
-          setTotalVisitors(3142);
-        }
-      } catch (err) {
-        setTotalVisitors(3142);
-      } finally {
-        setLoadingCounter(false);
-      }
-    }
-    trackVisit();
-  }, []);
-
-  // Fetch Live Twitter/X Posts from Supabase
-  useEffect(() => {
-    async function fetchLiveFeed() {
-      try {
-        setLoadingPosts(true);
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseAnon = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-        if (supabaseUrl && supabaseAnon) {
-          const res = await fetch(`${supabaseUrl}/rest/v1/social_posts?editorial_status=eq.PUBLISHED&select=*&order=timestamp.desc&limit=15`, {
-            headers: { apikey: supabaseAnon, Authorization: `Bearer ${supabaseAnon}` }
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.length > 0) setLivePosts(data);
-          }
-        }
-      } catch (err) {
-        console.error("Feed error:", err);
-      } finally {
-        setLoadingPosts(false);
-      }
-    }
-    fetchLiveFeed();
   }, []);
 
   const copyToClipboard = (text) => {
@@ -104,7 +212,17 @@ export default function App() {
     setTimeout(() => setCopiedText(""), 2000);
   };
 
-  // --- THE COMPLETE 10 THEMATIC PILLARS ---
+  const handlePledgeAndRedirect = (e) => {
+    e.preventDefault();
+    const finalAmount = customPledge ? parseInt(customPledge) : pledgeAmount;
+    if (!finalAmount || isNaN(finalAmount) || finalAmount <= 0) { window.open(BHARAT_KE_VEER_URL, "_blank"); return; }
+    
+    setShowPledgeSuccess(true);
+    setCustomPledge(""); setDonorName(""); setDonorMsg("");
+    setTimeout(() => window.open(BHARAT_KE_VEER_URL, "_blank"), 800);
+    setTimeout(() => setShowPledgeSuccess(false), 6000);
+  };
+
   const pillars = [
     {
       id: 1, title: "Youth: Past Action vs Today's Preach", tag: "Youth Contradiction", icon: Users, color: "from-amber-500 to-orange-600",
@@ -127,7 +245,7 @@ export default function App() {
       quote: '"Ladki hoon, lad sakti hoon" — Coined shortly before losing 97% of security deposits in UP elections.'
     },
     {
-      id: 3, title: "Minority Politics: Appeasement vs Upliftment", tag: "Vote Bank Engineering", icon: Shield, color: "from-purple-500 to-indigo-600",
+      id: 3, title: "Minority Politics: Tokenism vs Upliftment", tag: "Vote Bank Engineering", icon: Shield, color: "from-purple-500 to-indigo-600",
       summary: "The Sachar Committee (2006) revealed how 50+ years of governance left minority communities economically and educationally at the bottom.",
       points: [
         { heading: "Sachar Committee Self-Indictment", detail: "Commissioned by UPA, it found that 55 years of rule kept Indian Muslims with only 2.5% representation in IAS/IPS and severe literacy gaps." },
@@ -208,7 +326,6 @@ export default function App() {
     }
   ];
 
-  // --- THE COMPLETE MEGA SCAM VAULT ---
   const scamDatabase = [
     { id: "2g", name: "2G Spectrum Allocation Scam", year: "2008", loss: "₹1,76,000 Cr", lossNum: 176000, category: "Telecom & Tech", minister: "A. Raja / UPA-1", cag: "CAG Report No. 19 of 2010-11", description: "Arbitrary first-come-first-served spectrum allocation at throwaway prices. 122 telecom licenses cancelled by Supreme Court in 2012 citing unconstitutional processes.", status: "Licenses Cancelled by SC", source: "SC Judgment (2012) 3 SCC 1" },
     { id: "coal", name: "Coalgate: Coal Block Allocation", year: "2012", loss: "₹1,86,000 Cr", lossNum: 186000, category: "Natural Resources", minister: "Ministry of Coal / UPA", cag: "CAG Report No. 7 of 2012-13", description: "Allocation of 214 captive coal blocks to private firms without transparent competitive bidding. Supreme Court cancelled 214 allocations in 2014.", status: "Allocations Cancelled by SC", source: "SC Judgment (2014) 9 SCC 516" },
@@ -220,28 +337,6 @@ export default function App() {
     { id: "airindia", name: "Air India Fleet Acquisition", year: "2005-2010", loss: "₹67,000 Cr", lossNum: 67000, category: "Aviation", minister: "Praful Patel / UPA", cag: "CAG Report No. 18 of 2011", description: "Ordering 111 new aircraft worth ₹67,000 Cr for a cash-strapped national carrier while systematically surrendering profitable Gulf routes to private airlines.", status: "CBI FIRs Registered", source: "CAG Civil Aviation Audit 2011" },
     { id: "antrix", name: "Antrix-Devas S-Band Deal", year: "2005", loss: "₹15,000 Cr", lossNum: 15000, category: "Space & Telecom", minister: "PMO / Dept of Space (UPA)", cag: "High Level Review 2011", description: "Leasing 70 MHz of rare S-band military spectrum to private startup Devas for nominal rates without cabinet approval. SC upheld liquidation on grounds of fraud.", status: "Deal Cancelled / Fraud Upheld", source: "SC Judgment (2022)" }
   ];
-
-  const filteredScams = useMemo(() => {
-    return scamDatabase.filter((s) => {
-      const matchesSearch = s.name.toLowerCase().includes(scamSearch.toLowerCase()) || s.minister.toLowerCase().includes(scamSearch.toLowerCase());
-      const matchesCategory = scamCategory === "All" || s.category === scamCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [scamSearch, scamCategory]);
-
-  const totalScamLossEstimate = useMemo(() => scamDatabase.reduce((acc, curr) => acc + curr.lossNum, 0), []);
-
-  const handlePledgeAndRedirect = (e) => {
-    e.preventDefault();
-    const finalAmount = customPledge ? parseInt(customPledge) : pledgeAmount;
-    if (!finalAmount || isNaN(finalAmount) || finalAmount <= 0) { window.open(BHARAT_KE_VEER_URL, "_blank"); return; }
-    
-    // Fallback pledge addition
-    setShowPledgeSuccess(true);
-    setCustomPledge(""); setDonorName(""); setDonorMsg("");
-    setTimeout(() => window.open(BHARAT_KE_VEER_URL, "_blank"), 800);
-    setTimeout(() => setShowPledgeSuccess(false), 6000);
-  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950">
@@ -275,11 +370,15 @@ export default function App() {
             {/* Desktop Nav */}
             <nav className="hidden xl:flex items-center gap-1 lg:gap-2">
               <button onClick={() => setActiveTab("overview")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "overview" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>Dhongress Daily</button>
-              <button onClick={() => setActiveTab("archive")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "archive" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>Historical Archive</button>
               <button onClick={() => setActiveTab("pillars")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "pillars" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>10 Charges</button>
               <button onClick={() => setActiveTab("scams")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "scams" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>Scam Vault</button>
               <button onClick={() => setActiveTab("meltdown")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "meltdown" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40" : "text-slate-300 hover:text-white hover:bg-slate-800"}`}>Meltdown</button>
               
+              {/* NEW: Research Database Tab */}
+              <button onClick={() => setActiveTab("research")} className={`px-3 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${activeTab === "research" ? "bg-blue-500/20 text-blue-300 border border-blue-500/40" : "text-blue-400 hover:text-blue-300 hover:bg-slate-800"}`}>
+                <Database className="w-4 h-4" /> Research Database
+              </button>
+
               {/* HIDDEN ADMIN DESK - ONLY SHOWS IF ?editor=true */}
               {showAdminTab && (
                 <button onClick={() => setActiveTab("admin")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/40" : "text-purple-400 hover:text-purple-300 hover:bg-purple-900/30"}`}>
@@ -303,10 +402,10 @@ export default function App() {
         {mobileMenuOpen && (
           <div className="xl:hidden border-b border-slate-800 bg-slate-900 px-4 pt-2 pb-6 space-y-2">
             <button onClick={() => { setActiveTab("overview"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200 hover:bg-slate-800">Dhongress Daily</button>
-            <button onClick={() => { setActiveTab("archive"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200 hover:bg-slate-800">Historical News Archive</button>
             <button onClick={() => { setActiveTab("pillars"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200 hover:bg-slate-800">10 Thematic Charges</button>
             <button onClick={() => { setActiveTab("scams"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200 hover:bg-slate-800">Mega Scam Vault</button>
             <button onClick={() => { setActiveTab("meltdown"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-slate-200 hover:bg-slate-800">Electoral Meltdown</button>
+            <button onClick={() => { setActiveTab("research"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-bold text-blue-400 hover:bg-slate-800 flex items-center gap-2"><Database className="w-4 h-4" /> Research Database</button>
             {showAdminTab && (
               <button onClick={() => { setActiveTab("admin"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 rounded text-base font-medium text-purple-300 hover:bg-slate-800 flex items-center gap-2"><Lock className="w-4 h-4" /> Editorial Desk</button>
             )}
@@ -360,6 +459,12 @@ export default function App() {
                 <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto">
                   Automated public statements archive comparing promises on X against empirical governance records and court documents.
                 </p>
+                
+                <div className="pt-4 flex items-center justify-center">
+                  <button onClick={() => setActiveTab("research")} className="px-6 py-3 rounded-xl font-bold bg-blue-600/20 border border-blue-500/50 text-blue-300 hover:bg-blue-600/40 transition-all flex items-center gap-2">
+                    <Database className="w-4 h-4" /> Enter Research Database
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -438,36 +543,368 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 2: HISTORICAL NEWS ARCHIVE (NEW) */}
-        {activeTab === "archive" && (
-          <div className="space-y-8">
-            <div className="text-center max-w-3xl mx-auto space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 border border-amber-800/60 px-3 py-1 rounded-full">NewsAPI & Archives Integration</span>
-              <h2 className="text-3xl sm:text-4xl font-black text-white">Historical Headlines Archive</h2>
-              <p className="text-sm text-slate-400">Authentic newspaper clippings and API-scraped front pages documenting the realities of the era.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-slate-900 border border-slate-800 p-6 space-y-4 shadow-xl">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <span className="text-xs font-bold text-slate-400 font-mono">The Times of India (Archive)</span>
-                  <span className="text-xs bg-slate-800 px-2 py-0.5 rounded text-amber-400">Oct 2010</span>
-                </div>
-                <h3 className="text-xl font-serif font-black text-white">"CWG: Shunglu panel indicts Delhi L-G, DDA, Emaar MGF"</h3>
-                <p className="text-sm text-slate-300 italic">"The Shunglu Committee, probing corruption in organising the Commonwealth Games, has in its second report indicted top officials... leading to a loss of Rs 220 crore to the exchequer."</p>
-                <div className="text-[10px] text-slate-500 uppercase tracking-widest pt-2 border-t border-slate-800"><Library className="w-3 h-3 inline mr-1" /> Source: Newspapers.com Archive Extraction</div>
-              </div>
-
-              <div className="rounded-2xl bg-slate-900 border border-slate-800 p-6 space-y-4 shadow-xl">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <span className="text-xs font-bold text-slate-400 font-mono">Swedish Radio Broadcast</span>
-                  <span className="text-xs bg-slate-800 px-2 py-0.5 rounded text-amber-400">Apr 1987</span>
-                </div>
-                <h3 className="text-xl font-serif font-black text-white">"Bribes paid to Indian politicians for Bofors Contract"</h3>
-                <p className="text-sm text-slate-300 italic">"A Swedish radio station broke a story... alleging that Bofors had paid kickbacks to people in India to secure a ₹15 billion contract for 410 field howitzers."</p>
-                <div className="text-[10px] text-slate-500 uppercase tracking-widest pt-2 border-t border-slate-800"><Library className="w-3 h-3 inline mr-1" /> Source: Dagens Eko Exposé (Scraped via Mediastack API)</div>
+        {/* NEW VIEW: RESEARCH DATABASE */}
+        {activeTab === "research" && (
+          <div className="space-y-12">
+            
+            {/* Header */}
+            <div className="text-center max-w-4xl mx-auto space-y-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-700/60 text-blue-300 text-xs font-bold tracking-wider uppercase">
+                <Database className="w-3.5 h-3.5" /> Follow The Numbers
+              </span>
+              <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">THE CONGRESS RESEARCH DATABASE</h2>
+              <p className="text-lg text-slate-300">2014–2026 • Elections • Controversies • Headlines • Evidence</p>
+              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 max-w-2xl mx-auto">
+                <AlertCircle className="w-4 h-4 inline mr-1.5 text-amber-400" />
+                <strong>Research archive</strong> compiled from publicly reported election results, news reports, and legal/agency developments. 
+                <span className="text-amber-400 font-semibold ml-1">Allegations are not convictions.</span>
               </div>
             </div>
+
+            {/* Error State */}
+            {csvError && (
+              <div className="bg-red-950/40 border border-red-800 p-6 rounded-2xl text-center space-y-2">
+                <AlertTriangle className="w-8 h-8 text-red-500 mx-auto" />
+                <h3 className="text-lg font-bold text-red-400">Data Loading Error</h3>
+                <p className="text-sm text-slate-300">{csvError}</p>
+                <p className="text-xs text-slate-500 mt-2">Ensure CSV files are available in the public directory.</p>
+              </div>
+            )}
+
+            {!csvError && isCsvLoading && (
+              <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+                <p className="text-slate-400 font-mono text-sm">Parsing Research Datasets...</p>
+              </div>
+            )}
+
+            {/* Content loaded successfully */}
+            {!csvError && !isCsvLoading && electionData.length > 0 && (
+              <div className="space-y-16">
+                
+                {/* SECTION 1: EXECUTIVE DASHBOARD */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-white border-b border-slate-800 pb-2">1. Executive Summary</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Election Events</div>
+                      <div className="text-3xl font-black text-blue-400 font-mono">{elecStats.total}</div>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Lok Sabha</div>
+                      <div className="text-3xl font-black text-white font-mono">{elecStats.ls}</div>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Assembly</div>
+                      <div className="text-3xl font-black text-white font-mono">{elecStats.state}</div>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">News Records</div>
+                      <div className="text-3xl font-black text-amber-400 font-mono">{newsStats.total}</div>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl col-span-2">
+                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Lok Sabha Seats (14-19-24)</div>
+                      <div className="flex items-end gap-3 h-8 mt-1">
+                        <div className="flex flex-col items-center gap-1"><div className="h-4 w-8 bg-red-500 rounded-t"></div><span className="text-[10px] font-mono text-white">44</span></div>
+                        <div className="flex flex-col items-center gap-1"><div className="h-5 w-8 bg-orange-500 rounded-t"></div><span className="text-[10px] font-mono text-white">52</span></div>
+                        <div className="flex flex-col items-center gap-1"><div className="h-8 w-8 bg-emerald-500 rounded-t"></div><span className="text-[10px] font-mono text-white">99</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SECTION 2: ELECTION DATABASE */}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-2">
+                    <h3 className="text-xl font-bold text-white">2. Congress Election Performance (2014–2026)</h3>
+                    
+                    {/* Filters */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <select className="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 focus:border-blue-500 outline-none" value={elecFilterYear} onChange={e => setElecFilterYear(e.target.value)}>
+                        <option value="All">All Years</option>
+                        {elecYears.filter(y => y !== 'All').map(y => <option key={y} value={y}>{y}</option>)}
+                      </select>
+                      <select className="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 focus:border-blue-500 outline-none" value={elecFilterType} onChange={e => setElecFilterType(e.target.value)}>
+                        {elecTypes.map(t => <option key={t} value={t}>{t === "All" ? "All Types" : t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden">
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-950/80 border-b border-slate-800 text-xs uppercase text-slate-400">
+                          <tr>
+                            <th className="px-4 py-3 font-semibold">Year</th>
+                            <th className="px-4 py-3 font-semibold">Election</th>
+                            <th className="px-4 py-3 font-semibold">State</th>
+                            <th className="px-4 py-3 font-semibold">Seats</th>
+                            <th className="px-4 py-3 font-semibold">INC Won</th>
+                            <th className="px-4 py-3 font-semibold">Outcome</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/50 text-slate-300">
+                          {filteredElections.slice(0, 50).map((row, i) => (
+                            <tr key={i} className="hover:bg-slate-800/30 transition-colors">
+                              <td className="px-4 py-3 font-mono">{row['Year']}</td>
+                              <td className="px-4 py-3">{row['Election Type'] || row['Election']}</td>
+                              <td className="px-4 py-3 font-semibold text-white">{row['State']}</td>
+                              <td className="px-4 py-3 font-mono">{row['Total Seats'] || row['Seats']}</td>
+                              <td className="px-4 py-3 font-mono text-blue-400 font-bold">{row['INC Seats Won'] || row['INC Won']}</td>
+                              <td className="px-4 py-3">
+                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${
+                                  row['Outcome']?.toLowerCase().includes('won') || row['Outcome']?.toLowerCase().includes('victory') ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
+                                  row['Outcome']?.toLowerCase().includes('defeat') || row['Outcome']?.toLowerCase().includes('lost') ? 'bg-red-950 text-red-400 border border-red-800' :
+                                  'bg-slate-800 text-slate-300'
+                                }`}>
+                                  {row['Outcome']}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {filteredElections.length > 50 && (
+                        <div className="p-3 text-center text-xs text-slate-500 border-t border-slate-800">
+                          Showing first 50 of {filteredElections.length} records.
+                        </div>
+                      )}
+                      {filteredElections.length === 0 && (
+                        <div className="p-8 text-center text-slate-500">No elections found for these filters.</div>
+                      )}
+                    </div>
+                    
+                    {/* Mobile Cards */}
+                    <div className="md:hidden divide-y divide-slate-800/50">
+                      {filteredElections.slice(0, 20).map((row, i) => (
+                        <div key={i} className="p-4 space-y-2">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <div className="text-xs text-slate-400 font-mono">{row['Year']} • {row['Election Type'] || row['Election']}</div>
+                              <div className="font-bold text-white">{row['State']}</div>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${
+                                row['Outcome']?.toLowerCase().includes('won') || row['Outcome']?.toLowerCase().includes('victory') ? 'bg-emerald-950 text-emerald-400' :
+                                row['Outcome']?.toLowerCase().includes('defeat') || row['Outcome']?.toLowerCase().includes('lost') ? 'bg-red-950 text-red-400' :
+                                'bg-slate-800 text-slate-300'
+                              }`}>
+                                {row['Outcome']}
+                            </span>
+                          </div>
+                          <div className="flex gap-4 text-xs">
+                            <div>Total Seats: <span className="font-mono text-slate-300">{row['Total Seats'] || row['Seats']}</span></div>
+                            <div>INC Won: <span className="font-mono font-bold text-blue-400">{row['INC Seats Won'] || row['INC Won']}</span></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SECTION 4: DEFEAT ANALYSIS & MARGIN DISCLAIMER */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-white border-b border-slate-800 pb-2">3. Largest Electoral Setbacks</h3>
+                  
+                  <div className="bg-amber-950/30 border border-amber-900/50 p-4 rounded-xl flex items-start gap-3">
+                    <Info className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold text-amber-400">Margin Data — Limitation Notice</h4>
+                      <p className="text-xs text-amber-200/80 leading-relaxed">
+                        The current database records election-level house results. Constituency-level winning margins require individual candidate results and are strictly not inferred or fabricated here to maintain research credibility.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {electionData
+                      .filter(d => parseInt(d['INC Seats Won']) === 0 && d['Total Seats'])
+                      .slice(0, 4)
+                      .map((d, i) => (
+                        <div key={i} className="bg-slate-900 border border-red-900/30 p-4 rounded-2xl relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-16 h-16 bg-red-500/5 rounded-bl-full"></div>
+                          <div className="text-[10px] text-slate-500 font-mono mb-1">{d['Year']} • {d['Election Type']}</div>
+                          <div className="font-bold text-white mb-2">{d['State']}</div>
+                          <div className="text-xs text-slate-400">Seat Share Won:</div>
+                          <div className="text-2xl font-black text-red-500 font-mono">0 / {d['Total Seats']}</div>
+                        </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* SECTION 5: CORRUPTION & CONTROVERSY NEWS ARCHIVE */}
+                <div className="space-y-6 pt-8 border-t border-slate-800">
+                  <div className="text-center max-w-3xl mx-auto space-y-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-rose-400 bg-rose-950/60 border border-rose-800/60 px-3 py-1 rounded-full">
+                      The Paper Trail
+                    </span>
+                    <h2 className="text-3xl font-black text-white">Corruption & Controversy News Archive</h2>
+                    <p className="text-sm text-slate-400">{newsStats.total}+ documented news records • {newsStats.uniqueCases} Controversies</p>
+                  </div>
+
+                  {/* ALLEGATION != CONVICTION SECTION 6 */}
+                  <div className="bg-slate-900 border-l-4 border-amber-500 p-5 rounded-r-2xl space-y-2">
+                    <h4 className="font-black text-amber-400 uppercase tracking-wider text-sm flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" /> Allegation ≠ Conviction
+                    </h4>
+                    <p className="text-xs text-slate-300">
+                      This archive contains publicly reported articles regarding allegations, investigations, political claims and legal proceedings. 
+                      Inclusion in this archive does not establish criminal liability. Statuses explicitly record favourable outcomes, acquittals, or discharges where reported.
+                    </p>
+                  </div>
+
+                  {/* News Filters & Search */}
+                  <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 space-y-4">
+                    <div className="relative w-full">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                      <input 
+                        type="text" 
+                        placeholder="Search headlines, people, cases..." 
+                        value={newsSearch} 
+                        onChange={e => setNewsSearch(e.target.value)} 
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500" 
+                      />
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex flex-wrap gap-2">
+                        <select className="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 focus:border-rose-500 outline-none max-w-[150px]" value={newsFilterYear} onChange={e => setNewsFilterYear(e.target.value)}>
+                          <option value="All">All Years</option>
+                          {newsYears.filter(y => y !== 'All').map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                        <select className="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 focus:border-rose-500 outline-none max-w-[150px] truncate" value={newsFilterCase} onChange={e => setNewsFilterCase(e.target.value)}>
+                          <option value="All">All Controversies</option>
+                          {newsCases.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      
+                      <div className="flex bg-slate-950 rounded-lg p-1 border border-slate-800">
+                        <button onClick={() => setNewsViewMode('cards')} className={`px-3 py-1 rounded text-xs font-semibold ${newsViewMode === 'cards' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'}`}>Cards</button>
+                        <button onClick={() => setNewsViewMode('table')} className={`px-3 py-1 rounded text-xs font-semibold ${newsViewMode === 'table' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'}`}>Table</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* News Output */}
+                  {newsViewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {filteredNews.slice(0, 24).map((item, i) => (
+                        <div key={i} className="bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-start">
+                              <span className="text-[10px] font-mono text-slate-500">{item['Date']}</span>
+                              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-rose-400 truncate max-w-[150px]">
+                                {item['Case / Controversy']}
+                              </span>
+                            </div>
+                            <h4 className="text-base font-bold text-white leading-snug">
+                              {item['Headline']}
+                            </h4>
+                            <div className="text-xs text-slate-400 space-y-1">
+                              <div><strong>Source:</strong> {item['Source']}</div>
+                              {item['Evidence Classification'] && <div><strong>Classification:</strong> <span className="text-amber-400">{item['Evidence Classification']}</span></div>}
+                              {item['Status'] && <div className="text-emerald-400"><strong>Status:</strong> {item['Status']}</div>}
+                            </div>
+                          </div>
+                          {item['URL'] && (
+                            <a href={item['URL']} target="_blank" rel="noopener noreferrer" className="mt-2 text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                              READ ARTICLE <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-950 border-b border-slate-800 text-xs text-slate-400">
+                          <tr>
+                            <th className="px-4 py-3">Date</th>
+                            <th className="px-4 py-3">Case</th>
+                            <th className="px-4 py-3">Headline</th>
+                            <th className="px-4 py-3">Source</th>
+                            <th className="px-4 py-3">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/50 text-slate-300">
+                          {filteredNews.slice(0, 50).map((item, i) => (
+                            <tr key={i} className="hover:bg-slate-800/30 transition-colors">
+                              <td className="px-4 py-3 font-mono whitespace-nowrap">{item['Date']}</td>
+                              <td className="px-4 py-3 text-xs text-rose-400">{item['Case / Controversy']}</td>
+                              <td className="px-4 py-3 font-medium text-white max-w-xs">
+                                {item['URL'] ? <a href={item['URL']} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-400">{item['Headline']}</a> : item['Headline']}
+                              </td>
+                              <td className="px-4 py-3 text-xs">{item['Source']}</td>
+                              <td className="px-4 py-3 text-xs text-emerald-400">{item['Status']}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  {filteredNews.length > 24 && newsViewMode === 'cards' && (
+                     <div className="text-center text-xs text-slate-500">Showing 24 of {filteredNews.length} articles. Use search/filters or table view for more.</div>
+                  )}
+                </div>
+
+                {/* SECTION 8: CASE DEEP DIVE */}
+                <div className="space-y-6 pt-8 border-t border-slate-800">
+                  <h3 className="text-xl font-bold text-white">4. Case Deep-Dive</h3>
+                  <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <label className="text-sm font-semibold text-slate-300">Select a controversy to analyze:</label>
+                      <select className="bg-slate-950 border border-slate-700 text-sm text-white rounded-lg px-3 py-2 focus:border-blue-500 outline-none flex-grow max-w-md" value={selectedDeepDiveCase} onChange={e => setSelectedDeepDiveCase(e.target.value)}>
+                        <option value="">-- Choose Case --</option>
+                        {newsCases.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+
+                    {caseDeepDiveData && (
+                      <div className="pt-4 border-t border-slate-800 space-y-6 animate-fade-in">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                            <div className="text-[10px] text-slate-500 uppercase font-bold">Total Articles</div>
+                            <div className="text-xl font-mono text-white">{caseDeepDiveData.count}</div>
+                          </div>
+                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                            <div className="text-[10px] text-slate-500 uppercase font-bold">Timeline Started</div>
+                            <div className="text-sm font-mono text-white mt-1">{caseDeepDiveData.earliest}</div>
+                          </div>
+                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 col-span-2">
+                            <div className="text-[10px] text-slate-500 uppercase font-bold">Key Figures / Entities</div>
+                            <div className="text-xs text-amber-400 mt-1 truncate">{caseDeepDiveData.people || "Various"}</div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Chronological Developments</h4>
+                          <div className="pl-4 border-l-2 border-slate-800 space-y-4">
+                            {caseDeepDiveData.articles.map((art, idx) => (
+                              <div key={idx} className="relative">
+                                <div className="absolute -left-[21px] top-1.5 w-2 h-2 rounded-full bg-blue-500"></div>
+                                <div className="text-[10px] font-mono text-slate-500 mb-0.5">{art['Date']} • {art['Source']}</div>
+                                <div className="text-sm font-medium text-slate-200">{art['Headline']}</div>
+                                {art['Status'] && <div className="text-xs text-emerald-400 mt-0.5">{art['Status']}</div>}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* SECTION 12: SOURCES & METHODOLOGY */}
+                <div className="pt-12 pb-6 border-t border-slate-800 text-center space-y-4">
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Sources & Methodology</h4>
+                  <div className="max-w-3xl mx-auto text-xs text-slate-500 space-y-2 leading-relaxed text-left sm:text-center">
+                    <p><strong>Election Data:</strong> Rendered dynamically from supplied historical election datasets. "Primary Electoral Factor" reflects compiled analytical notes and is not an official ECI declaration.</p>
+                    <p><strong>News Data:</strong> Contains publicly documented news reports spanning 2014–2026. Inclusion in this archive indicates public reporting/investigation, not criminal guilt.</p>
+                    <p><strong>Margin Limitations:</strong> This repository relies on house-level seat outcomes. Constituency-level margins are excluded to preserve accuracy without fabrication.</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -475,6 +912,9 @@ export default function App() {
         {activeTab === "pillars" && (
           <div className="space-y-8">
             <div className="text-center max-w-3xl mx-auto space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 border border-amber-800/60 px-3 py-1 rounded-full">
+                Exhaustive Section-by-Section Audit
+              </span>
               <h2 className="text-3xl sm:text-4xl font-black text-white">The 10 Structural Charges</h2>
             </div>
             <div className="flex overflow-x-auto pb-3 gap-2 no-scrollbar border-b border-slate-800">
@@ -519,9 +959,17 @@ export default function App() {
         {/* VIEW 4: MEGA SCAM VAULT */}
         {activeTab === "scams" && (
           <div className="space-y-8">
-            <div className="text-center max-w-3xl mx-auto space-y-3">
+            <div className="text-center max-w-3xl mx-auto space-y-4">
               <h2 className="text-3xl sm:text-4xl font-black text-white">The Mega Scam Vault</h2>
+              {/* CROSS-LINK TO RESEARCH DATABASE */}
+              <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-xs text-slate-400 max-w-2xl mx-auto">
+                <p>Historical allegations and reported losses are not equivalent to judicially established corruption. See the Research Archive for legal/source status context.</p>
+                <button onClick={() => setActiveTab("research")} className="mt-3 px-4 py-2 rounded-lg bg-blue-900/40 text-blue-300 hover:bg-blue-900/60 transition-colors border border-blue-800/50 font-semibold inline-flex items-center gap-2">
+                  View Source News Archive <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
+            
             <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
               <div className="relative w-full md:w-96">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -577,6 +1025,14 @@ export default function App() {
             <div className="text-center max-w-3xl mx-auto space-y-3">
               <h2 className="text-3xl sm:text-4xl font-black text-white">The Long Electoral Meltdown</h2>
             </div>
+
+            {/* CROSS-LINK TO RESEARCH DATABASE */}
+            <div className="text-center pb-4">
+              <button onClick={() => setActiveTab("research")} className="px-6 py-3 rounded-xl font-bold bg-blue-900/30 border border-blue-800 text-blue-300 hover:bg-blue-800/50 transition-all flex items-center justify-center gap-2 mx-auto">
+                <Database className="w-4 h-4" /> EXPLORE FULL 2014–2026 ELECTION DATABASE <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
             <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 md:p-8 space-y-6 shadow-xl max-w-3xl mx-auto">
               <h3 className="text-xl font-bold text-white flex items-center gap-2"><TrendingDown className="w-5 h-5 text-red-500" /> Lok Sabha Seats (1984–2024)</h3>
               <div className="space-y-4">
