@@ -250,11 +250,11 @@ export default function App() {
     }
   };
 
-  // --- 120+ EXPANDED INC LIVE MONITOR ROTATING BANK ---
+  // --- 120+ EXPANDED INC LIVE MONITOR ROTATING BANK (Updates every 5-10 mins) ---
   const [incLiveMonitorIndex, setIncLiveMonitorIndex] = useState(0);
   const [incMonitorPaused, setIncMonitorPaused] = useState(false);
 
-  const incLiveMonitorBank = [
+  const incLiveMonitorBank = useMemo(() => [
     { id: 1, author: "Rahul Gandhi", handle: "RahulGandhi", text: "We will guarantee 30 Lakh government jobs to the youth immediately upon forming the government.", status: "MISLEADING", evidence: "During UPA (2004-2014), formal job creation averaged 1.5% annually. Immediate 30 Lakh jobs lacked budgetary mapping." },
     { id: 2, author: "INC Official", handle: "INCIndia", text: "Our government always stood for the ultimate empowerment of women across all sectors.", status: "DISPUTED", evidence: "The 33% Women's Reservation Bill was kept pending in Lok Sabha for 27 years." },
     { id: 3, author: "Pawan Khera", handle: "Pawankhera", text: "They are claiming 'Zero Loss' in the 2G spectrum scam again today on television.", status: "VERIFIED", evidence: "Supreme Court cancelled 122 licenses in 2012; CAG documented ₹1.76 Lakh Crore estimated presumptive loss." },
@@ -265,57 +265,16 @@ export default function App() {
     { id: 8, author: "Priyanka Gandhi", handle: "priyankagandhi", text: "Rural sanitation was non-existent and ignored until recently.", status: "MISLEADING", evidence: "Rural sanitation coverage stood below 39% in 2014 after decades of slow progress." },
     { id: 9, author: "Jairam Ramesh", handle: "Jairam_Ramesh", text: "Environmental clearances were never bypassed for industrial projects previously.", status: "DISPUTED", evidence: "The Western Ghats ecology reports and numerous UPA-era clearances faced severe environmental critiques." },
     { id: 10, author: "Srinivas BV", handle: "srinivasiyc", text: "Youth unemployment in our governed states is zero due to proactive policies.", status: "EXAGGERATED", evidence: "Periodic Labour Force Survey (PLFS) data indicates state-level unemployment fluctuates irrespective of governance." }
-  ];
+  ], []);
 
-  // 7-Minute Rotation for INC Live Monitor
+  // 6-Minute Rotation for INC Live Monitor (within 5-10 min window)
   useEffect(() => {
     if (incMonitorPaused || activeTab !== "overview") return;
     const interval = setInterval(() => {
       setIncLiveMonitorIndex((prev) => (prev + 1) % incLiveMonitorBank.length);
-    }, 420000);
+    }, 360000);
     return () => clearInterval(interval);
   }, [incMonitorPaused, activeTab, incLiveMonitorBank.length]);
-
-  // --- 10 EXPANDED TWITTER FEEDS WITH 5S ROTATION & ARROWS ---
-  const [bjpFeedIndex, setBjpFeedIndex] = useState(0);
-  const [govFeedIndex, setGovFeedIndex] = useState(0);
-  const [feedPaused, setFeedPaused] = useState(false);
-
-  const bjpLiveFeed = [
-    { id: 1, author: "Narendra Modi", handle: "narendramodi", text: "India's growth story continues to be defined by our hardworking youth. New initiatives launched today will empower millions.", time: "12 mins ago", url: "https://twitter.com/narendramodi" },
-    { id: 2, author: "Amit Shah", handle: "AmitShah", text: "National security remains our paramount priority. We will not compromise on the safety of our borders.", time: "28 mins ago", url: "https://twitter.com/AmitShah" },
-    { id: 3, author: "BJP", handle: "BJP4India", text: "Watch LIVE: Press conference at BJP Headquarters detailing new developmental milestones.", time: "42 mins ago", url: "https://twitter.com/BJP4India" },
-    { id: 4, author: "S. Jaishankar", handle: "DrSJaishankar", text: "Productive discussions with my counterpart. India's foreign policy is firmly driven by national interest.", time: "1 hr ago", url: "https://twitter.com/DrSJaishankar" },
-    { id: 5, author: "Nitin Gadkari", handle: "nitin_gadkari", text: "Inspected the ongoing highway project. World-class infrastructure is the backbone of a New India.", time: "1 hr ago", url: "https://twitter.com/nitin_gadkari" },
-    { id: 6, author: "J.P. Nadda", handle: "JPNadda", text: "The enthusiasm of karyakartas reflects the unwavering trust of the people in our vision.", time: "2 hrs ago", url: "https://twitter.com/JPNadda" },
-    { id: 7, author: "Rajnath Singh", handle: "rajnathsingh", text: "Our armed forces are fully equipped, modernized, and ready to face any challenge.", time: "3 hrs ago", url: "https://twitter.com/rajnathsingh" },
-    { id: 8, author: "Piyush Goyal", handle: "PiyushGoyal", text: "Record-breaking exports this quarter! 'Make in India' products are reaching every corner.", time: "3 hrs ago", url: "https://twitter.com/PiyushGoyal" },
-    { id: 9, author: "Kiren Rijiju", handle: "KirenRijiju", text: "Constructive debate in Parliament today. Committed to legislation that empowers citizens.", time: "4 hrs ago", url: "https://twitter.com/KirenRijiju" },
-    { id: 10, author: "Himanta Biswa Sarma", handle: "himantabiswa", text: "Committed to preserving civilizational heritage while driving modern infrastructure.", time: "5 hrs ago", url: "https://twitter.com/himantabiswa" }
-  ];
-
-  const govLiveFeed = [
-    { id: 1, author: "PIB Fact Check", handle: "PIBFactCheck", text: "Fake notice claiming exam dates changed is circulating online. No such decision taken.", time: "8 mins ago", status: "FAKE NEWS DEBUNKED", url: "https://twitter.com/PIBFactCheck" },
-    { id: 2, author: "MyGovIndia", handle: "mygovindia", text: "Over 50 crore Ayushman cards created! A historic milestone in providing free healthcare.", time: "18 mins ago", status: "OFFICIAL UPDATE", url: "https://twitter.com/mygovindia" },
-    { id: 3, author: "Ministry of Finance", handle: "FinMinIndia", text: "GST revenue collection for the month records a 11% Year-on-Year growth.", time: "35 mins ago", status: "DATA RELEASE", url: "https://twitter.com/FinMinIndia" },
-    { id: 4, author: "Indian Army", handle: "adgpi", text: "Joint military exercise successfully concluded today, enhancing strategic coordination.", time: "45 mins ago", status: "DEFENCE UPDATE", url: "https://twitter.com/adgpi" },
-    { id: 5, author: "ISRO", handle: "isro", text: "Latest communication satellite successfully placed into its intended orbit. Congrats team!", time: "1 hr ago", status: "SPACE MISSION", url: "https://twitter.com/isro" },
-    { id: 6, author: "Ministry of Health", handle: "MoHFW_INDIA", text: "New medical colleges approved, adding 1500 MBBS seats to strengthen healthcare.", time: "2 hrs ago", status: "HEALTH POLICY", url: "https://twitter.com/MoHFW_INDIA" },
-    { id: 7, author: "Digital India", handle: "_DigitalIndia", text: "UPI transactions hit another all-time high. India leads in real-time digital payments!", time: "2 hrs ago", status: "MILESTONE", url: "https://twitter.com/_DigitalIndia" },
-    { id: 8, author: "Ministry of Railways", handle: "RailMinIndia", text: "Vande Bharat express successfully completes trial run on newly electrified route.", time: "3 hrs ago", status: "INFRASTRUCTURE", url: "https://twitter.com/RailMinIndia" },
-    { id: 9, author: "CERT-In", handle: "IndianCERT", text: "Advisory: Users advised to update browsers immediately to patch critical vulnerability.", time: "4 hrs ago", status: "CYBER SECURITY", url: "https://twitter.com/IndianCERT" },
-    { id: 10, author: "UIDAI", handle: "UIDAI", text: "Remember, UIDAI never asks you to share your Aadhaar OTP on phone calls. Stay alert.", time: "5 hrs ago", status: "CITIZEN ADVISORY", url: "https://twitter.com/UIDAI" }
-  ];
-
-  // 5-Second Rotation Timer for Widgets
-  useEffect(() => {
-    if (feedPaused || activeTab !== "overview") return;
-    const interval = setInterval(() => {
-      setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length);
-      setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [feedPaused, activeTab]);
 
   // --- DEMOCRACY QUOTES ROTATION ---
   const [quoteIndex, setQuoteIndex] = useState(0);
@@ -333,7 +292,7 @@ export default function App() {
       setQuoteIndex((prev) => (prev + 1) % democracyQuotes.length);
     }, 15000);
     return () => clearInterval(interval);
-  }, [activeTab]);
+  }, [activeTab, democracyQuotes.length]);
 
   // --- CHANAKYA QUOTES FOR CHARGES PAGE ---
   const [chanakyaIndex, setChanakyaIndex] = useState(0);
@@ -349,7 +308,7 @@ export default function App() {
       setChanakyaIndex((prev) => (prev + 1) % chanakyaQuotes.length);
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [chanakyaQuotes.length]);
 
   // --- THE DARK ARCHIVE DATA ---
   const [archiveFilter, setArchiveFilter] = useState("ALL");
@@ -358,7 +317,7 @@ export default function App() {
   const [archiveIndex, setArchiveIndex] = useState(0);
   const [archivePaused, setArchivePaused] = useState(false);
 
-  const darkArchiveItems = [
+  const darkArchiveItems = useMemo(() => [
     {
       id: 1, title: "Emergency Press Censorship — 1975", category: "CENSORSHIP", year: "1975–1977", status: "CENSORED",
       summary: "During the Emergency, newspapers were subjected to pre-censorship and editors were required to obtain government clearance before publishing news.",
@@ -440,7 +399,7 @@ export default function App() {
       secondary_source: "Historical Research", secondary_source_url: "https://indianexpress.com/article/explained/explained-history/explained-the-story-of-the-emergency-9421688/",
       badge: "HISTORICAL RECORD"
     }
-  ];
+  ], []);
 
   // Archive Auto-Rotation Timer
   useEffect(() => {
@@ -459,7 +418,7 @@ export default function App() {
     });
   }, [archiveFilter, archiveSearch, darkArchiveItems]);
 
-  const pillars = [
+  const pillars = useMemo(() => [
     { id: 1, title: "Youth: Past Action vs Today's Preach", icon: Users, summary: "Decades of sluggish educational reforms, legacy of paper leaks, and employment stagnation juxtaposed with current tall promises.", points: [{ heading: "The 60-Year Jobless Paradigm", detail: "While currently demanding 30 lakh government jobs with a magic wand, the 2004-2014 era witnessed an average formal employment growth of under 1.5%." }, { heading: "Paper Leaks & State Freezes", detail: "Recruitment freezes and state-level teacher examination scams in Congress-governed states affected 26+ lakh young aspirants." }] },
     { id: 2, title: "Mahila: Rhetoric vs Reality on Women", icon: Heart, summary: "Decades of keeping the Women's Reservation Bill in legislative cold-storage while claiming sole proprietorship of gender justice.", points: [{ heading: "The 33% Reservation 27-Year Stalling", detail: "Despite holding full majority multiple times, the Nari Shakti Vandan was allowed to lapse without floor consensus." }, { heading: "The Shah Bano Regression (1985)", detail: "Overturned the landmark SC judgment granting basic maintenance to an indigent Muslim woman, capitulating to conservative patriarchy." }] },
     { id: 3, title: "Minority Politics: Appeasement vs Upliftment", icon: Shield, summary: "The Sachar Committee (2006) revealed how 50+ years of governance left minority communities economically and educationally at the bottom.", points: [{ heading: "Sachar Committee Self-Indictment", detail: "Commissioned by UPA, it found that 55 years of rule kept Indian Muslims with only 2.5% representation in IAS/IPS." }, { heading: "Zero Reformist Backbone", detail: "Consistently opposed the modernization of madrasa education and blocked personal law reforms (like Triple Talaq abolition)." }] },
@@ -470,9 +429,9 @@ export default function App() {
     { id: 8, title: "Sanskar: Defamation & Institutional Disrespect", icon: Flame, summary: "A catalog of derogatory epithets against constitutional posts, veterans, and political opponents.", points: [{ heading: "Insults to Constitutional Positions", detail: "Repeated derogatory remarks against the President of India ('Rashtrapatni'), Prime Minister, and Election Commissioners." }, { heading: "Tearing the Cabinet Ordinance (2013)", detail: "Publicly humiliating his own Prime Minister Dr. Manmohan Singh by tearing a government ordinance into pieces in a live press conference." }] },
     { id: 9, title: "One Family, One Party: Sidelining Merit", icon: Crown, summary: "How internal party democracy was decimated and iconic non-dynasty leaders were historically humiliated.", points: [{ heading: "The Humiliation of PV Narasimha Rao", detail: "The former PM who unlocked 1991 reforms was denied entry of his mortal remains into the AICC headquarters." }, { heading: "The Mass Exodus of Competent Leaders", detail: "Over 40 prominent senior leaders left citing dynastic sycophancy." }] },
     { id: 10, title: "Worst Electoral Meltdown in Democracy", icon: TrendingDown, summary: "How India's oldest party went from 414 seats (1984) to historic lows of 44 (2014) and 52 (2019).", points: [{ heading: "The 44-Seat Nadir (2014)", detail: "Could not even secure the statutory 10% of seats required to claim the formal Leader of Opposition status in Lok Sabha." }, { heading: "Sub-20% Strike Rate", detail: "In head-to-head national contests against national alternatives, the strike rate remained under 15% across three general elections." }] }
-  ];
+  ], []);
 
-  const scamDatabase = [
+  const scamDatabase = useMemo(() => [
     { id: "2g", name: "2G Spectrum Allocation Scam", year: "2008", loss: "₹1,76,000 Cr", category: "Telecom & Tech", minister: "A. Raja / UPA-1", cag: "CAG Report No. 19 of 2010-11", description: "Arbitrary first-come-first-served spectrum allocation at throwaway prices. 122 licenses cancelled by SC.", status: "Licenses Cancelled by SC", source: "SC Judgment (2012)" },
     { id: "coal", name: "Coalgate: Coal Block Allocation", year: "2012", loss: "₹1,86,000 Cr", category: "Natural Resources", minister: "Ministry of Coal / UPA", cag: "CAG Report No. 7 of 2012-13", description: "Allocation of 214 captive coal blocks to private firms without transparent competitive bidding.", status: "Allocations Cancelled by SC", source: "SC Judgment (2014)" },
     { id: "cwg", name: "Commonwealth Games (CWG) Loot", year: "2010", loss: "₹70,000 Cr", category: "Sports & Infrastructure", minister: "Suresh Kalmadi", cag: "Shunglu Committee", description: "Massive over-invoicing including toilet paper rolls purchased for ₹3,750 each.", status: "Charge-sheets Filed", source: "Shunglu Committee Report" },
@@ -482,7 +441,7 @@ export default function App() {
     { id: "adarsh", name: "Adarsh Housing Society Scam", year: "2010", loss: "Unquantified", category: "Land & Defense", minister: "Ashok Chavan", cag: "CAG Special Audit", description: "Building meant for Kargil war widows was allotted to politicians, bureaucrats, and military top brass.", status: "Demolition Ordered", source: "J.A. Patil Commission" },
     { id: "airindia", name: "Air India Fleet Acquisition", year: "2005-2010", loss: "₹67,000 Cr", category: "Aviation", minister: "Praful Patel", cag: "CAG Report No. 18", description: "Ordering 111 new aircraft for a cash-strapped national carrier while surrendering profitable routes.", status: "CBI FIRs Registered", source: "CAG Audit 2011" },
     { id: "antrix", name: "Antrix-Devas S-Band Deal", year: "2005", loss: "₹15,000 Cr", category: "Space & Telecom", minister: "PMO / Dept of Space", cag: "High Level Review", description: "Leasing 70 MHz of rare S-band military spectrum to private startup Devas for throwaway rates.", status: "Fraud Upheld", source: "SC Judgment (2022)" }
-  ];
+  ], []);
 
   return (
     <div className="min-h-screen font-sans selection:bg-purple-500 selection:text-white bg-[#0f172a] text-slate-100">
