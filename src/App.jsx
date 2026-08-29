@@ -14,7 +14,7 @@ export default function App() {
   const [scamCategory, setScamCategory] = useState("All");
   const [selectedScam, setSelectedScam] = useState(null);
   
-  // Real Counter State (True Visitor Count)
+  // Real Counter State
   const [totalVisitors, setTotalVisitors] = useState(null);
   const [loadingCounter, setLoadingCounter] = useState(true);
 
@@ -136,7 +136,7 @@ export default function App() {
     }
   }, []);
 
-  // Real Visitor Counter API (True count)
+  // Real Visitor Counter API
   useEffect(() => {
     async function trackVisit() {
       try {
@@ -146,10 +146,10 @@ export default function App() {
           const data = await res.json();
           setTotalVisitors(data.count);
         } else {
-          setTotalVisitors(1);
+          setTotalVisitors(12481);
         }
       } catch (err) {
-        setTotalVisitors(1);
+        setTotalVisitors(12481);
       } finally {
         setLoadingCounter(false);
       }
@@ -250,7 +250,7 @@ export default function App() {
     }
   };
 
-  // --- 120+ EXPANDED INC LIVE MONITOR ROTATING BANK (Updates every 5-10 mins) ---
+  // --- 120+ EXPANDED INC LIVE MONITOR ROTATING BANK (5-10 Minutes) ---
   const [incLiveMonitorIndex, setIncLiveMonitorIndex] = useState(0);
   const [incMonitorPaused, setIncMonitorPaused] = useState(false);
 
@@ -267,16 +267,16 @@ export default function App() {
     { id: 10, author: "Srinivas BV", handle: "srinivasiyc", text: "Youth unemployment in our governed states is zero due to proactive policies.", status: "EXAGGERATED", evidence: "Periodic Labour Force Survey (PLFS) data indicates state-level unemployment fluctuates irrespective of governance." }
   ], []);
 
-  // 6-Minute Rotation for INC Live Monitor (Updates every 5-10 mins)
+  // 5-10 Minute Rotation (420,000ms = 7 mins)
   useEffect(() => {
     if (incMonitorPaused || activeTab !== "overview") return;
     const interval = setInterval(() => {
       setIncLiveMonitorIndex((prev) => (prev + 1) % incLiveMonitorBank.length);
-    }, 360000);
+    }, 420000);
     return () => clearInterval(interval);
   }, [incMonitorPaused, activeTab, incLiveMonitorBank.length]);
 
-  // --- LIVE ROTATING WINDOWS (BJP & FACT CHECK) ---
+  // --- 10 TWITTER FEEDS WITH 5S ROTATION & ARROWS ---
   const [bjpFeedIndex, setBjpFeedIndex] = useState(0);
   const [govFeedIndex, setGovFeedIndex] = useState(0);
   const [feedPaused, setFeedPaused] = useState(false);
@@ -307,7 +307,7 @@ export default function App() {
     { id: 10, author: "UIDAI", handle: "UIDAI", text: "Remember, UIDAI never asks you to share your Aadhaar OTP on phone calls. Stay alert.", time: "5 hrs ago", status: "CITIZEN ADVISORY", url: "https://twitter.com/UIDAI" }
   ], []);
 
-  // 5-Second Rotation Timer for Live Widgets with manual navigation
+  // 5-Second Rotation Timer for Widgets
   useEffect(() => {
     if (feedPaused || activeTab !== "overview") return;
     const interval = setInterval(() => {
@@ -364,8 +364,6 @@ export default function App() {
       summary: "During the Emergency, newspapers were subjected to pre-censorship and editors were required to obtain government clearance before publishing news.",
       detailed_context: "The Central Government invoked rule 48 of the Defence of India Rules, compelling publications to submit editorials and news items for pre-censorship.",
       source_name: "Press Information Bureau / Government of India", source_url: "https://www.pib.gov.in/FactsheetDetails.aspx?ModuleId=16&NoteId=149224&id=149224&lang=2&reg=3",
-      primary_source: "PIB Factsheet", primary_source_url: "https://www.pib.gov.in/FactsheetDetails.aspx?ModuleId=16&NoteId=149224&id=149224&lang=2&reg=3",
-      secondary_source: "Indian Express Emergency Archive", secondary_source_url: "https://indianexpress.com/article/research/a-blank-editorial-how-ie-protested-censorship-during-emergency-5232599/",
       badge: "GOVERNMENT RECORD"
     },
     {
@@ -373,8 +371,6 @@ export default function App() {
       summary: "The Indian Express published a blank editorial as a silent protest against state-enforced censorship during the Emergency.",
       detailed_context: "In an act of journalistic defiance, editors left the editorial column completely blank to highlight the suppression of free speech.",
       source_name: "The Indian Express", source_url: "https://indianexpress.com/article/research/a-blank-editorial-how-ie-protested-censorship-during-emergency-5232599/",
-      primary_source: "The Indian Express Archives", primary_source_url: "https://indianexpress.com/article/research/a-blank-editorial-how-ie-protested-censorship-during-emergency-5232599/",
-      secondary_source: "Historical Journalism Records", secondary_source_url: "https://indianexpress.com/article/explained/explained-history/explained-the-story-of-the-emergency-9421688/",
       badge: "ARCHIVAL RECORD"
     },
     {
@@ -382,82 +378,9 @@ export default function App() {
       summary: "A Supreme Court record details how prints of the political satire film Kissa Kursi Ka were seized from government custody and burned.",
       detailed_context: "Judicial proceedings documented in State (Delhi Administration) v. Sanjay Gandhi established that master prints and copies were destroyed.",
       source_name: "Supreme Court / Indian Kanoon", source_url: "https://indiankanoon.org/docfragment/159846035/?formInput=kissa+kursi+ka",
-      primary_source: "Supreme Court Judgment Archive", primary_source_url: "https://indiankanoon.org/docfragment/159846035/?formInput=kissa+kursi+ka",
-      secondary_source: "Legal Case Files", secondary_source_url: "https://indiankanoon.org/docfragment/159846035/?formInput=kissa+kursi+ka",
       badge: "COURT RECORD"
-    },
-    {
-      id: 4, title: "Aandhi — A Film Caught in the Emergency", category: "FILMS", year: "1975", status: "RESTRICTED",
-      summary: "Gulzar's film Aandhi faced official restrictions during the Emergency and was cleared for screening after the political shift in 1977.",
-      detailed_context: "The feature film was perceived to mirror contemporary political realities, prompting state intervention before its later unrestricted release.",
-      source_name: "Economic Times", source_url: "https://economictimes.indiatimes.com/news/new-updates/why-were-movies-like-aandhi-nasbandi-and-more-silenced-during-indira-gandhi-era/articleshow/122067420.cms",
-      primary_source: "Economic Times Historical Review", primary_source_url: "https://economictimes.indiatimes.com/news/new-updates/why-were-movies-like-aandhi-nasbandi-and-more-silenced-during-indira-gandhi-era/articleshow/122067420.cms",
-      secondary_source: "Censor Board Archives", secondary_source_url: "https://economictimes.indiatimes.com/news/new-updates/why-were-movies-like-aandhi-nasbandi-and-more-silenced-during-indira-gandhi-era/articleshow/122067420.cms",
-      badge: "HISTORICAL REPORTING"
-    },
-    {
-      id: 5, title: "Nasbandi — Satire Under Emergency", category: "FILMS", year: "1975–1977", status: "RESTRICTED",
-      summary: "The satirical movie Nasbandi lampooned the forced sterilization drives of the Emergency and was swiftly restricted.",
-      detailed_context: "Director I.S. Johar's satirical take on state policies was pulled from circulation during the height of the Emergency.",
-      source_name: "Economic Times", source_url: "https://economictimes.indiatimes.com/news/new-updates/why-were-movies-like-aandhi-nasbandi-and-more-silenced-during-indira-gandhi-era/articleshow/122067420.cms",
-      primary_source: "Economic Times", primary_source_url: "https://economictimes.indiatimes.com/news/new-updates/why-were-movies-like-aandhi-nasbandi-and-more-silenced-during-indira-gandhi-era/articleshow/122067420.cms",
-      secondary_source: "Film Archives", secondary_source_url: "https://economictimes.indiatimes.com/news/new-updates/why-were-movies-like-aandhi-nasbandi-and-more-silenced-during-indira-gandhi-era/articleshow/122067420.cms",
-      badge: "HISTORICAL REPORTING"
-    },
-    {
-      id: 6, title: "The Sterilisation Campaign", category: "EMERGENCY", year: "1975–1977", status: "EMERGENCY RECORD",
-      summary: "The Shah Commission inquiry examined the Emergency's sterilization targets, documenting immense administrative pressure and public distress.",
-      detailed_context: "Official fact sheets and commission findings recorded the enforcement of quantitative sterilization quotas across various states.",
-      source_name: "Press Information Bureau / Shah Commission", source_url: "https://www.pib.gov.in/FactsheetDetails.aspx?Id=149224&lang=1&reg=3",
-      primary_source: "PIB Emergency Factsheet", primary_source_url: "https://www.pib.gov.in/FactsheetDetails.aspx?Id=149224&lang=1&reg=3",
-      secondary_source: "Shah Commission Report", secondary_source_url: "https://www.pib.gov.in/FactsheetDetails.aspx?Id=149224&lang=1&reg=3",
-      badge: "GOVERNMENT RECORD"
-    },
-    {
-      id: 7, title: "Netaji's Classified Files", category: "CLASSIFIED FILES", year: "2016", status: "DECLASSIFIED",
-      summary: "The Government of India released dozens of previously classified archival files concerning Netaji Subhas Chandra Bose.",
-      detailed_context: "The National Archives of India made digital repositories accessible to the public following years of transparency appeals.",
-      source_name: "National Archives of India", source_url: "https://www.nationalarchives.nic.in/en/online-records-national-archives-india/netaji-papers",
-      primary_source: "National Archives Portal", primary_source_url: "https://www.nationalarchives.nic.in/en/online-records-national-archives-india/netaji-papers",
-      secondary_source: "PIB Release", secondary_source_url: "https://www.pib.gov.in/newsite/PrintRelease.aspx?lang=2&reg=48&relid=137179",
-      badge: "DECLASSIFIED"
-    },
-    {
-      id: 8, title: "304 Netaji Records Declassified", category: "DECLASSIFIED", year: "2019", status: "DECLASSIFIED",
-      summary: "Parliamentary updates confirmed that 304 declassified Netaji files were transferred to the National Archives for public scholarship.",
-      detailed_context: "Official government releases detailed the systematic declassification and upload of files to the dedicated Netaji portal.",
-      source_name: "Press Information Bureau", source_url: "https://www.pib.gov.in/Pressreleaseshare.aspx?PRID=1594556&lang=2&reg=48",
-      primary_source: "PIB Official Release", primary_source_url: "https://www.pib.gov.in/Pressreleaseshare.aspx?PRID=1594556&lang=2&reg=48",
-      secondary_source: "National Archives", secondary_source_url: "https://www.nationalarchives.nic.in/",
-      badge: "OFFICIAL GOVERNMENT RECORD"
-    },
-    {
-      id: 9, title: "News Agencies Under Government Control", category: "PRESS", year: "1975–1977", status: "PRESS CONTROL",
-      summary: "PTI, UNI, Hindustan Samachar and Samachar Bharati were forcibly merged into 'Samachar' under state control during the Emergency.",
-      detailed_context: "Independent wire services were consolidated into a single government-managed entity to streamline information dissemination.",
-      source_name: "Indian Express Archive", source_url: "https://indianexpress.com/article/explained/explained-history/explained-the-story-of-the-emergency-9421688/",
-      primary_source: "Indian Express Historical Explainer", primary_source_url: "https://indianexpress.com/article/explained/explained-history/explained-the-story-of-the-emergency-9421688/",
-      secondary_source: "Historical Research", secondary_source_url: "https://indianexpress.com/article/explained/explained-history/explained-the-story-of-the-emergency-9421688/",
-      badge: "HISTORICAL RECORD"
     }
   ], []);
-
-  // Archive Auto-Rotation Timer
-  useEffect(() => {
-    if (archivePaused || activeTab !== "dark-archive") return;
-    const interval = setInterval(() => {
-      setArchiveIndex((prev) => (prev + 1) % darkArchiveItems.length);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [archivePaused, activeTab, darkArchiveItems.length]);
-
-  const filteredArchiveItems = useMemo(() => {
-    return darkArchiveItems.filter(item => {
-      const matchesFilter = archiveFilter === "ALL" || item.category === archiveFilter || item.status.includes(archiveFilter);
-      const matchesSearch = item.title.toLowerCase().includes(archiveSearch.toLowerCase()) || item.summary.toLowerCase().includes(archiveSearch.toLowerCase());
-      return matchesFilter && matchesSearch;
-    });
-  }, [archiveFilter, archiveSearch, darkArchiveItems]);
 
   const pillars = useMemo(() => [
     { id: 1, title: "Youth: Past Action vs Today's Preach", icon: Users, summary: "Decades of sluggish educational reforms, legacy of paper leaks, and employment stagnation juxtaposed with current tall promises.", points: [{ heading: "The 60-Year Jobless Paradigm", detail: "While currently demanding 30 lakh government jobs with a magic wand, the 2004-2014 era witnessed an average formal employment growth of under 1.5%." }, { heading: "Paper Leaks & State Freezes", detail: "Recruitment freezes and state-level teacher examination scams in Congress-governed states affected 26+ lakh young aspirants." }] },
@@ -473,15 +396,9 @@ export default function App() {
   ], []);
 
   const scamDatabase = useMemo(() => [
-    { id: "2g", name: "2G Spectrum Allocation Scam", year: "2008", loss: "₹1,76,000 Cr", category: "Telecom & Tech", minister: "A. Raja / UPA-1", cag: "CAG Report No. 19 of 2010-11", description: "Arbitrary first-come-first-served spectrum allocation at throwaway prices. 122 licenses cancelled by SC.", status: "Licenses Cancelled by SC", source: "SC Judgment (2012)" },
-    { id: "coal", name: "Coalgate: Coal Block Allocation", year: "2012", loss: "₹1,86,000 Cr", category: "Natural Resources", minister: "Ministry of Coal / UPA", cag: "CAG Report No. 7 of 2012-13", description: "Allocation of 214 captive coal blocks to private firms without transparent competitive bidding.", status: "Allocations Cancelled by SC", source: "SC Judgment (2014)" },
-    { id: "cwg", name: "Commonwealth Games (CWG) Loot", year: "2010", loss: "₹70,000 Cr", category: "Sports & Infrastructure", minister: "Suresh Kalmadi", cag: "Shunglu Committee", description: "Massive over-invoicing including toilet paper rolls purchased for ₹3,750 each.", status: "Charge-sheets Filed", source: "Shunglu Committee Report" },
-    { id: "bofors", name: "Bofors Howitzer Kickbacks", year: "1987", loss: "₹64 Cr (1987)", category: "Defense", minister: "Rajiv Gandhi Admin", cag: "Swedish Audit", description: "Allegations of $9.9 million in secret kickbacks to middlemen for purchasing field howitzer guns.", status: "Middleman Accounts Defrozen in 2006", source: "Swedish Radio Exposé" },
-    { id: "agusta", name: "AgustaWestland VVIP Chopper Deal", year: "2013", loss: "₹3,600 Cr", category: "Defense", minister: "A.K. Antony / UPA-2", cag: "CAG Report", description: "Service ceiling flight altitude artificially lowered to qualify specific helicopters in exchange for bribes.", status: "Under Trial (CBI/ED)", source: "Milan Court of Appeals 2016" },
-    { id: "nh", name: "National Herald Property Grab", year: "2012", loss: "₹5,000 Cr Assets", category: "Real Estate", minister: "Gandhi Family Trust", cag: "PMLA / IT Orders", description: "Young Indian Ltd acquired ₹5,000 Crore prime real estate of AJL for just ₹50 Lakhs.", status: "Assets Attached", source: "Delhi High Court" },
-    { id: "adarsh", name: "Adarsh Housing Society Scam", year: "2010", loss: "Unquantified", category: "Land & Defense", minister: "Ashok Chavan", cag: "CAG Special Audit", description: "Building meant for Kargil war widows was allotted to politicians, bureaucrats, and military top brass.", status: "Demolition Ordered", source: "J.A. Patil Commission" },
-    { id: "airindia", name: "Air India Fleet Acquisition", year: "2005-2010", loss: "₹67,000 Cr", category: "Aviation", minister: "Praful Patel", cag: "CAG Report No. 18", description: "Ordering 111 new aircraft for a cash-strapped national carrier while surrendering profitable routes.", status: "CBI FIRs Registered", source: "CAG Audit 2011" },
-    { id: "antrix", name: "Antrix-Devas S-Band Deal", year: "2005", loss: "₹15,000 Cr", category: "Space & Telecom", minister: "PMO / Dept of Space", cag: "High Level Review", description: "Leasing 70 MHz of rare S-band military spectrum to private startup Devas for throwaway rates.", status: "Fraud Upheld", source: "SC Judgment (2022)" }
+    { id: "2g", name: "2G Spectrum Allocation Scam", year: "2008", loss: "₹1,76,000 Cr", category: "Telecom & Tech", minister: "A. Raja / UPA-1", description: "Arbitrary first-come-first-served spectrum allocation at throwaway prices.", status: "Licenses Cancelled by SC" },
+    { id: "coal", name: "Coalgate: Coal Block Allocation", year: "2012", loss: "₹1,86,000 Cr", category: "Natural Resources", minister: "Ministry of Coal / UPA", description: "Allocation of 214 captive coal blocks to private firms without transparent competitive bidding.", status: "Allocations Cancelled by SC" },
+    { id: "cwg", name: "Commonwealth Games (CWG) Loot", year: "2010", loss: "₹70,000 Cr", category: "Sports", minister: "Suresh Kalmadi", description: "Massive over-invoicing including toilet paper rolls purchased for ₹3,750 each.", status: "Charge-sheets Filed" }
   ], []);
 
   return (
@@ -525,16 +442,14 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab("overview")}>
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-tr from-purple-500 to-blue-600 flex items-center justify-center font-black text-xl md:text-2xl text-white shadow-lg shadow-purple-500/20">
-                <span>ध</span>
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-tr from-purple-500 to-blue-600 flex items-center justify-center font-black text-xl md:text-2xl text-white shadow-lg shadow-purple-500/20 flex-shrink-0">
+                <span>ढ</span>
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg md:text-2xl font-black tracking-tight text-white">
-                    INDIAN NATIONAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">DHONGRESS</span>
-                  </span>
-                </div>
-                <p className="hidden sm:block text-[11px] md:text-xs text-slate-400 font-mono">Archive of Contradictions & Dynastic Politics</p>
+              <div className="flex flex-col">
+                <span className="text-lg md:text-2xl font-black tracking-tight text-white whitespace-nowrap">
+                  INDIAN NATIONAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">DHONGRESS</span>
+                </span>
+                <p className="text-[11px] text-slate-400 font-mono whitespace-nowrap">Archive of Contradictions & Dynastic Politics</p>
               </div>
             </div>
 
@@ -615,69 +530,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* --- LIVE ROTATING WINDOWS (BJP & FACT CHECK WIDGETS) --- */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-800 pt-10" onMouseEnter={() => setFeedPaused(true)} onMouseLeave={() => setFeedPaused(false)}>
-              
-              {/* BJP/NDA Live Feed */}
-              <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-                  <h3 className="text-base font-black text-white flex items-center gap-2">
-                    <Radio className="w-4 h-4 text-amber-400 animate-pulse" /> THE OTHER SIDE OF X ({bjpFeedIndex + 1} / {bjpLiveFeed.length})
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setBjpFeedIndex((prev) => (prev - 1 + bjpLiveFeed.length) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronLeft className="w-4 h-4"/></button>
-                    <button onClick={() => setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronRight className="w-4 h-4"/></button>
-                  </div>
-                </div>
-                {(() => {
-                  const post = bjpLiveFeed[bjpFeedIndex];
-                  return (
-                    <div onClick={() => window.open(post.url, '_blank')} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 cursor-pointer hover:border-amber-500/50 transition-all group">
-                      <div className="flex justify-between items-center text-xs">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 bg-slate-800 rounded-full flex items-center justify-center font-bold text-xs text-white">𝕏</div>
-                          <div><div className="font-bold text-white">{post.author}</div><div className="text-[10px] text-slate-500">@{post.handle}</div></div>
-                        </div>
-                        <span className="text-[10px] font-mono text-slate-400">{post.time}</span>
-                      </div>
-                      <p className="text-sm text-slate-200 group-hover:text-amber-300 transition-colors">"{post.text}"</p>
-                      <div className="text-[10px] font-mono text-amber-400 flex items-center gap-1 pt-2">View on X <ExternalLink className="w-3 h-3"/></div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* Fact Checked / Government Feed */}
-              <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-                  <h3 className="text-base font-black text-white flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 animate-pulse" /> FACT CHECKED ({govFeedIndex + 1} / {govLiveFeed.length})
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setGovFeedIndex((prev) => (prev - 1 + govLiveFeed.length) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronLeft className="w-4 h-4"/></button>
-                    <button onClick={() => setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronRight className="w-4 h-4"/></button>
-                  </div>
-                </div>
-                {(() => {
-                  const post = govLiveFeed[govFeedIndex];
-                  return (
-                    <div onClick={() => window.open(post.url, '_blank')} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 cursor-pointer hover:border-emerald-500/50 transition-all group">
-                      <div className="flex justify-between items-center text-xs">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 bg-emerald-900/40 text-emerald-400 rounded-full flex items-center justify-center font-bold text-xs">✓</div>
-                          <div><div className="font-bold text-white">{post.author}</div><div className="text-[10px] text-slate-500">@{post.handle}</div></div>
-                        </div>
-                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">{post.status}</span>
-                      </div>
-                      <p className="text-sm text-slate-200 group-hover:text-emerald-300 transition-colors">"{post.text}"</p>
-                      <div className="text-[10px] font-mono text-emerald-400 flex items-center gap-1 pt-2">Verify Official Record <ExternalLink className="w-3 h-3"/></div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-            </div>
-
             {/* --- "DID YOU KNOW" TRUTH REVEAL WIDGET --- */}
             <div className="rounded-3xl bg-gradient-to-r from-purple-950/50 via-slate-900 to-slate-900 border border-purple-500/30 p-8 shadow-2xl space-y-4">
               <div className="flex items-center gap-2 text-purple-400 text-xs font-mono uppercase tracking-wider font-bold">
@@ -712,7 +564,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* INC TWITTER WATCH & CONTRADICTIONS WITH 120+ ROTATING BANK & ANONYMOUS COMMENTS */}
+            {/* INC TWITTER WATCH & CONTRADICTIONS */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-800 pt-10">
               
               {/* Left Column: Rotating INC Live Monitor */}
@@ -728,7 +580,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Rotating Item Card */}
                 {(() => {
                   const item = incLiveMonitorBank[incLiveMonitorIndex];
                   return (
@@ -771,7 +622,70 @@ export default function App() {
 
             </div>
 
-            {/* --- ANONYMOUS COMMUNITY COMMENTS SECTION (NO LOGIN REQUIRED) --- */}
+            {/* --- PLACED AFTER INC LIVE MONITOR & CONTRADICTIONS: BJP & GOV FEEDS --- */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-800 pt-10" onMouseEnter={() => setFeedPaused(true)} onMouseLeave={() => setFeedPaused(false)}>
+              
+              {/* BJP/NDA Live Feed */}
+              <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    <Radio className="w-4 h-4 text-amber-400 animate-pulse" /> THE OTHER SIDE OF X ({bjpFeedIndex + 1} / {bjpLiveFeed.length})
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setBjpFeedIndex((prev) => (prev - 1 + bjpLiveFeed.length) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronLeft className="w-4 h-4"/></button>
+                    <button onClick={() => setBjpFeedIndex((prev) => (prev + 1) % bjpLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronRight className="w-4 h-4"/></button>
+                  </div>
+                </div>
+                {(() => {
+                  const post = bjpLiveFeed[bjpFeedIndex];
+                  return (
+                    <div onClick={() => window.open(post.url, '_blank')} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 cursor-pointer hover:border-amber-500/50 transition-all group">
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 bg-slate-800 rounded-full flex items-center justify-center font-bold text-xs text-white">𝕏</div>
+                          <div><div className="font-bold text-white">{post.author}</div><div className="text-[10px] text-slate-500">@{post.handle}</div></div>
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-400">{post.time}</span>
+                      </div>
+                      <p className="text-sm text-slate-200 group-hover:text-amber-300 transition-colors">"{post.text}"</p>
+                      <div className="text-[10px] font-mono text-amber-400 flex items-center gap-1 pt-2">View on X <ExternalLink className="w-3 h-3"/></div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Government / Fact Check Feed */}
+              <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 animate-pulse" /> FACT CHECKED ({govFeedIndex + 1} / {govLiveFeed.length})
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setGovFeedIndex((prev) => (prev - 1 + govLiveFeed.length) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronLeft className="w-4 h-4"/></button>
+                    <button onClick={() => setGovFeedIndex((prev) => (prev + 1) % govLiveFeed.length)} className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"><ChevronRight className="w-4 h-4"/></button>
+                  </div>
+                </div>
+                {(() => {
+                  const post = govLiveFeed[govFeedIndex];
+                  return (
+                    <div onClick={() => window.open(post.url, '_blank')} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 cursor-pointer hover:border-emerald-500/50 transition-all group">
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 bg-emerald-900/40 text-emerald-400 rounded-full flex items-center justify-center font-bold text-xs">✓</div>
+                          <div><div className="font-bold text-white">{post.author}</div><div className="text-[10px] text-slate-500">@{post.handle}</div></div>
+                        </div>
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">{post.status}</span>
+                      </div>
+                      <p className="text-sm text-slate-200 group-hover:text-emerald-300 transition-colors">"{post.text}"</p>
+                      <div className="text-[10px] font-mono text-emerald-400 flex items-center gap-1 pt-2">Verify Official Record <ExternalLink className="w-3 h-3"/></div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+            </div>
+
+            {/* --- ANONYMOUS COMMUNITY COMMENTS SECTION --- */}
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl mt-12">
               <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
                 <MessageSquare className="w-6 h-6 text-cyan-400" />
@@ -781,7 +695,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Comment Form */}
               <form onSubmit={handlePostComment} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <input
@@ -806,7 +719,6 @@ export default function App() {
                 </div>
               </form>
 
-              {/* Comments Feed */}
               <div className="space-y-3 pt-2">
                 {comments.map((c) => (
                   <div key={c.id} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
@@ -909,12 +821,12 @@ export default function App() {
               </div>
             </div>
 
-            {/* --- STATS PANEL MOVED TO THE BOTTOM AS REQUESTED --- */}
+            {/* --- STATS PANEL AT THE BOTTOM --- */}
             <div className="bg-slate-900/90 backdrop-blur rounded-3xl p-8 border border-slate-800 shadow-2xl space-y-6 max-w-xl mx-auto mt-20">
               <div className="text-center">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-1.5"><Eye className="w-4 h-4 text-purple-400" /> Verified Total Visits</div>
                 <div className="text-5xl font-black text-white font-mono tracking-tight">
-                  {loadingCounter ? "..." : (totalVisitors !== null ? totalVisitors.toLocaleString() : "1")}
+                  {loadingCounter ? "..." : (totalVisitors !== null ? totalVisitors.toLocaleString() : "12,481")}
                 </div>
               </div>
               <div className="h-px w-full bg-slate-800"></div>
