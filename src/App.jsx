@@ -79,28 +79,44 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           const region = (data.region || "").toLowerCase();
-          const country = (data.country_name || "").toLowerCase();
           setDetectedLocation(`${data.city || ""}, ${data.region || ""}`.trim());
 
-          // Map Indian state/regions to native languages automatically
-          if (region.includes("gujarat")) setCurrentLang("gu");
-          else if (region.includes("maharashtra")) setCurrentLang("mr");
-          else if (region.includes("tamil nadu")) setCurrentLang("ta");
-          else if (region.includes("karnataka")) setCurrentLang("kn");
-          else if (region.includes("kerala")) setCurrentLang("ml");
-          else if (region.includes("west bengal")) setCurrentLang("bn");
-          else if (region.includes("punjab")) setCurrentLang("pa");
-          else if (region.includes("andhra") || region.includes("telangana")) setCurrentLang("te");
+          if (region.includes("gujarat")) handleLanguageChange("gu");
+          else if (region.includes("maharashtra")) handleLanguageChange("mr");
+          else if (region.includes("tamil nadu")) handleLanguageChange("ta");
+          else if (region.includes("karnataka")) handleLanguageChange("kn");
+          else if (region.includes("kerala")) handleLanguageChange("ml");
+          else if (region.includes("west bengal")) handleLanguageChange("bn");
+          else if (region.includes("punjab")) handleLanguageChange("pa");
+          else if (region.includes("andhra") || region.includes("telangana")) handleLanguageChange("te");
           else if (["delhi", "uttar pradesh", "bihar", "madhya pradesh", "rajasthan", "haryana", "uttarakhand", "himachal"].some(s => region.includes(s))) {
-            setCurrentLang("hi");
+            handleLanguageChange("hi");
           }
         }
       } catch (err) {
-        console.warn("Geo-location lookup fallback to default English.");
+        console.warn("Geo-location lookup fallback.");
       }
     }
     detectUserLocationAndLang();
   }, []);
+
+  // Google Translate Trigger Helper
+  const handleLanguageChange = (langCode) => {
+    setCurrentLang(langCode);
+    try {
+      const selectField = document.querySelector(".goog-te-combo");
+      if (selectField) {
+        selectField.value = langCode;
+        selectField.dispatchEvent(new Event("change"));
+      } else {
+        // Fallback cookie setter for google translate
+        document.cookie = `googtrans=/en/${langCode}`;
+        window.location.reload();
+      }
+    } catch (e) {
+      console.warn("Translation trigger error", e);
+    }
+  };
 
   // Secret Admin URL Trigger (?editor=true)
   useEffect(() => {
@@ -297,7 +313,6 @@ export default function App() {
     { id: 28, author: "Jairam Ramesh", handle: "Jairam_Ramesh", text: "Forest cover decreased continuously over the last decade.", status: "FALSE", evidence: "State of India's Forest Report (ISFR) recorded consistent net increases in total forest and tree cover." },
     { id: 29, author: "Rahul Gandhi", handle: "RahulGandhi", text: "Farmers' incomes were doubled successfully by 2010 as promised.", status: "FALSE", evidence: "Agricultural growth averaged around 3% during UPA, with widespread agrarian distress and high farmer suicides." },
     { id: 30, author: "INC Official", handle: "INCIndia", text: "We introduced the Direct Benefit Transfer system without any leakage.", status: "DISPUTED", evidence: "While DBT plugged loopholes, early implementation faced significant biometric authentication failures." }
-    // Expanded conceptually up to 120+ items rotating smoothly every 6 minutes
   ];
 
   // 6-Minute Rotation for INC Live Monitor (360,000 ms)
@@ -520,7 +535,7 @@ export default function App() {
   return (
     <div className={`min-h-screen font-sans selection:bg-purple-500 selection:text-white ${activeTab === 'overview' ? 'bg-[#0f172a] text-slate-100' : activeTab === 'dark-archive' ? 'bg-[#050505] text-amber-500' : 'bg-slate-950 text-slate-100'}`}>
       
-      {/* 1. BHARAT KE VEER TOP BANNER */}
+      {/* 1. BHARAT KE VEER TOP BANNER & GOOGLE TRANSLATE WIDGET */}
       <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 px-4 py-2.5 text-xs md:text-sm font-black text-center text-white flex items-center justify-between gap-2 shadow-lg tracking-wide">
         <div className="flex-1 flex items-center justify-center gap-2">
           <Flag className="w-4 h-4 fill-white" />
@@ -533,7 +548,7 @@ export default function App() {
           <span className="hidden sm:inline opacity-80">{detectedLocation}:</span>
           <select 
             value={currentLang} 
-            onChange={(e) => setCurrentLang(e.target.value)}
+            onChange={(e) => handleLanguageChange(e.target.value)}
             className="bg-transparent text-white font-bold focus:outline-none cursor-pointer"
             aria-label="Select Language"
           >
@@ -550,6 +565,9 @@ export default function App() {
           </select>
         </div>
       </div>
+
+      {/* Hidden Google Translate Element to empower native DOM translation */}
+      <div id="google_translate_element" style={{ display: 'none' }}></div>
 
       {/* 2. MAIN HEADER / NAVIGATION */}
       <header className="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
